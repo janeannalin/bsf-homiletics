@@ -1287,13 +1287,14 @@
 
   /* On narrower screens, fall back to single-column even in 2-col mode
      by default — UNLESS the user is in 雙欄 mode, in which case we apply
-     a split-pane layout: passage pinned to viewport top, draggable
-     divider, and Steps + 綜覽 scrolling below. */
+     a split-pane layout: passage pinned to the BOTTOM of the viewport,
+     draggable divider above it, and Steps + 綜覽 scrolling above. */
   @media (max-width: 980px) {
-    /* Pin the Scripture passage to the very top of the viewport. */
+    /* Pin the Scripture passage to the very BOTTOM of the viewport. */
     body.layout-2col .scripture-text {
       position: fixed;
-      top: 0;
+      bottom: 0;
+      top: auto;
       left: 0;
       right: 0;
       height: var(--mobile-passage-height, 40vh);
@@ -1303,18 +1304,20 @@
       border-radius: 0;
       border-left: none;
       border-right: none;
-      border-top: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-bottom: none;
+      border-top: 1px solid var(--rule);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
       padding: 18px 20px;
     }
 
-    /* Show the draggable divider just below the fixed passage. */
+    /* Show the draggable divider just ABOVE the fixed passage. */
     body.layout-2col .mobile-resizer {
       display: flex;
       align-items: center;
       justify-content: center;
       position: fixed;
-      top: var(--mobile-passage-height, 40vh);
+      bottom: var(--mobile-passage-height, 40vh);
+      top: auto;
       left: 0;
       right: 0;
       height: 18px;
@@ -1342,9 +1345,10 @@
       opacity: 1;
     }
 
-    /* Push everything else below the fixed passage + resizer. */
+    /* Reserve space at the BOTTOM of the page so content isn't hidden
+       behind the fixed passage + resizer. */
     body.layout-2col .container {
-      padding-top: calc(var(--mobile-passage-height, 40vh) + 26px);
+      padding-bottom: calc(var(--mobile-passage-height, 40vh) + 26px);
     }
 
     /* Reset the work-area to normal block flow so steps + summary scroll naturally. */
@@ -2497,8 +2501,10 @@
 
     resizer.addEventListener('pointermove', (e) => {
       if (!dragging) return;
+      // Passage is pinned to the BOTTOM, so dragging the bar UP (negative dy)
+      // should make the passage taller, and dragging DOWN should shrink it.
       const dy = e.clientY - startY;
-      applyHeight(clampHeight(startHeight + dy));
+      applyHeight(clampHeight(startHeight - dy));
     });
 
     function endDrag(e) {
