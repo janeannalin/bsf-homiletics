@@ -2902,21 +2902,16 @@
 
   function handleSelection() {
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed) {
-      // handleSelection fires on every touchend inside the passage — including
-      // taps on existing highlights, which don't produce a selection. In that
-      // case the click handler is showing the "× 移除標記" popup, and we must
-      // not hide it just because there's no live text selection.
-      if (_popupContext && _popupContext.mode === 'remove') return;
-      hidePopup();
-      return;
-    }
+    // If there's no live text selection, do nothing. The popup (if showing)
+    // already has its data captured in _popupContext, so it remains valid
+    // and tappable. Dismissal happens only via explicit outside-click
+    // (document mousedown handler) or by tapping the popup itself.
+    // This prevents iOS quirks — like a stray touchend after the selection
+    // gesture, or a tap on the passage to dismiss the native toolbar — from
+    // unintentionally hiding our popup before the user can act on it.
+    if (!sel || sel.isCollapsed) return;
     const text = sel.toString().trim();
-    if (!text || text.length < 1) {
-      if (_popupContext && _popupContext.mode === 'remove') return;
-      hidePopup();
-      return;
-    }
+    if (!text || text.length < 1) return;
     // Make sure selection is inside passage
     const range = sel.getRangeAt(0);
     const passage = document.getElementById('stPassage');
