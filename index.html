@@ -1,0 +1,3302 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>經文分析 · BSF Homiletics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4EFE6;
+    --bg-2: #EDE6D8;
+    --paper: #FBF8F1;
+    --ink: #1E1A14;
+    --ink-soft: #4A4036;
+    --muted: #8A7B68;
+    --accent: #2D4A3E;
+    --accent-soft: #4A6B5C;
+    --accent-deep: #1B2E26;
+    --rule: #D9CDB7;
+    --rule-soft: #E8DFCB;
+    --highlight: #B85C2E;
+    --shadow: 0 1px 0 rgba(30,26,20,0.04), 0 8px 24px -12px rgba(30,26,20,0.12);
+    --shadow-lift: 0 1px 0 rgba(30,26,20,0.06), 0 18px 36px -16px rgba(30,26,20,0.2);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Serif TC', 'Noto Serif SC', 'Songti TC', 'Songti SC', 'PMingLiU', 'SimSun', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #EDE3CF 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #E8DFC9 0%, transparent 55%),
+      var(--bg);
+    min-height: 100vh;
+    padding: 48px 24px 96px;
+  }
+
+  .shell {
+    max-width: 980px;
+    margin: 0 auto;
+  }
+
+  /* === HEADER === */
+  header.masthead {
+    text-align: center;
+    padding: 24px 16px 40px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  .eyebrow {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .eyebrow::before, .eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+    vertical-align: middle;
+    margin: 0 14px;
+    opacity: 0.6;
+  }
+
+  h1.title {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-weight: 500;
+    font-size: clamp(38px, 6vw, 56px);
+    letter-spacing: 0.22em;
+    margin: 0 0 8px;
+    color: var(--ink);
+    text-indent: 0.22em;
+  }
+
+  .subtitle {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .subtitle .em {
+    font-style: italic;
+  }
+
+  /* === TOOLBAR === */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  .btn {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    padding: 10px 18px;
+    background: var(--paper);
+    color: var(--accent);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .btn:hover {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+
+  .btn.primary {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+
+  .btn.primary:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+  }
+
+  .btn.danger:hover {
+    background: var(--highlight);
+    border-color: var(--highlight);
+    color: var(--paper);
+  }
+
+  /* === SCRIPTURE REF === */
+  .scripture-ref {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .scripture-ref .sr-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .scripture-ref .sr-title {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .scripture-ref .sr-en {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    margin-left: 6px;
+  }
+
+  /* BSF / Manual mode toggle — sits next to the "經文 Scripture" title.
+     Styled to match .st-translation pills exactly (same background, padding, font). */
+  .sr-mode {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-2);
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+  }
+
+  .sr-mode label {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+
+  .sr-mode label:hover {
+    color: var(--accent);
+  }
+
+  .sr-mode input[type="radio"] {
+    display: none;
+  }
+
+  .sr-mode label.active {
+    background: var(--accent);
+    color: var(--paper);
+    box-shadow: 0 1px 2px rgba(30,26,20,0.15);
+  }
+
+  .scripture-ref input {
+    width: 100%;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--rule);
+    padding: 6px 4px;
+    outline: none;
+    letter-spacing: 0.05em;
+  }
+
+  .scripture-ref input:focus {
+    border-bottom-color: var(--accent);
+    border-bottom-style: solid;
+  }
+
+  /* === SCRIPTURE TEXT BLOCK === */
+  .scripture-text {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 28px 32px 24px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .scripture-text::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent-soft) 100%);
+    opacity: 0.7;
+  }
+
+  .st-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .st-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .st-title {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .st-en {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-left: 6px;
+    font-weight: 400;
+  }
+
+  .st-translation {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-2);
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+  }
+
+  .st-translation label {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    user-select: none;
+  }
+
+  .st-translation label:hover {
+    color: var(--accent);
+  }
+
+  .st-translation input[type="radio"] {
+    display: none;
+  }
+
+  .st-translation label.active {
+    background: var(--accent);
+    color: var(--paper);
+    box-shadow: 0 1px 2px rgba(30,26,20,0.15);
+  }
+
+  .st-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .st-actions .btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .st-rcuv-notice {
+    background: linear-gradient(180deg, #FBF3E8 0%, #F7EDDC 100%);
+    border: 1px solid #E5D4B0;
+    border-radius: 2px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .st-rcuv-notice strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .st-rcuv-notice .rcuv-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 7px 14px;
+    background: var(--accent);
+    color: var(--paper);
+    text-decoration: none;
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    transition: background 0.15s ease;
+  }
+
+  .st-rcuv-notice .rcuv-link:hover {
+    background: var(--accent-deep);
+  }
+
+  .st-passage {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 16.5px;
+    line-height: 2;
+    color: var(--ink);
+    padding: 18px 24px;
+    background: transparent;
+    border-radius: 2px;
+    min-height: 60px;
+    letter-spacing: 0.03em;
+    user-select: text;
+  }
+
+  .st-passage .passage-verse {
+    display: inline;
+  }
+
+  .st-passage .verse-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 0.78em;
+    color: var(--accent);
+    font-weight: 500;
+    margin-right: 4px;
+    margin-left: 6px;
+    vertical-align: 0.2em;
+    user-select: none;
+  }
+
+  .st-passage .passage-verse:first-child .verse-num {
+    margin-left: 0;
+  }
+
+  .st-passage mark.hl {
+    background: linear-gradient(180deg, transparent 0%, transparent 25%, #F5DC8E 25%, #F5DC8E 100%);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .st-passage mark.hl:hover {
+    background: linear-gradient(180deg, transparent 0%, transparent 25%, #F0CC60 25%, #F0CC60 100%);
+  }
+
+  .st-passage .st-empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  .st-passage .st-loading {
+    color: var(--accent);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  .st-passage .st-error {
+    color: var(--highlight);
+    font-size: 14px;
+  }
+
+  /* Floating popup for adding selection to content listing */
+  .hl-popup {
+    position: absolute;
+    background: var(--accent);
+    color: var(--paper);
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 6px 20px -4px rgba(30,26,20,0.35), 0 2px 6px rgba(30,26,20,0.15);
+    white-space: nowrap;
+    user-select: none;
+    border: none;
+    transition: background 0.15s ease;
+  }
+
+  .hl-popup:hover {
+    background: var(--accent-deep);
+  }
+
+  .hl-popup::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 18px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    transform: rotate(45deg);
+  }
+
+  .hl-popup.remove {
+    background: var(--highlight);
+  }
+
+  .hl-popup.remove::before {
+    background: var(--highlight);
+  }
+
+  .hl-popup.remove:hover {
+    background: #9F4D24;
+  }
+
+  /* Content row indicator for highlight-derived rows */
+  .content-row.from-highlight .verse-input {
+    background: linear-gradient(180deg, transparent 0%, transparent 70%, #F5DC8E 70%, #F5DC8E 100%);
+    color: var(--accent);
+  }
+
+  .st-edit {
+    width: 100%;
+    margin-top: 10px;
+    padding: 16px 20px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: #FDFBF6;
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.9;
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .st-edit:focus {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--paper);
+  }
+
+  .st-attribution {
+    margin-top: 12px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-align: right;
+  }
+
+  .st-hint {
+    margin-top: 12px;
+    padding: 8px 14px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 12.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    border-left: 2px solid var(--rule);
+    background: transparent;
+    line-height: 1.6;
+  }
+
+  /* === LANGUAGE TOGGLE === */
+  .lang-switcher {
+    display: inline-flex;
+    gap: 2px;
+    background: var(--bg-2);
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+    align-self: center;
+  }
+
+  .switchers-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 22px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .layout-switcher {
+    display: inline-flex;
+    gap: 2px;
+    background: var(--bg-2);
+    padding: 3px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+    align-self: center;
+  }
+
+  .layout-switcher label {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 6px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+
+  .layout-switcher label:hover {
+    color: var(--accent);
+  }
+
+  .layout-switcher input[type="radio"] {
+    display: none;
+  }
+
+  .layout-switcher label.active {
+    background: var(--accent);
+    color: var(--paper);
+    box-shadow: 0 1px 2px rgba(30,26,20,0.15);
+  }
+
+  .lang-switcher label {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 6px 16px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    letter-spacing: 0.06em;
+    user-select: none;
+  }
+
+  .lang-switcher label:hover {
+    color: var(--accent);
+  }
+
+  .lang-switcher input[type="radio"] {
+    display: none;
+  }
+
+  .lang-switcher label.active {
+    background: var(--accent);
+    color: var(--paper);
+    box-shadow: 0 1px 2px rgba(30,26,20,0.15);
+  }
+
+  /* === STEP CARDS === */
+  .step {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 36px 36px 32px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .step:hover {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .step-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .step-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .step-head-text {
+    flex: 1;
+  }
+
+  .step-title {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    margin: 0 0 4px;
+  }
+
+  .step-en {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-left: 8px;
+    font-weight: 400;
+  }
+
+  .step-tagline {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 14px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .step-tagline .en {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+  }
+
+  /* === HINT === */
+  .hint {
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+  }
+
+  .hint strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .hint ul {
+    margin: 6px 0 0;
+    padding-left: 20px;
+  }
+
+  .hint li {
+    margin-bottom: 2px;
+  }
+
+  /* Collapsible 方法 box: button styling that mimics the original strong tag,
+     plus a chevron that rotates when collapsed. Click to toggle. */
+  .hint-toggle {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: inherit;
+    line-height: inherit;
+  }
+
+  .hint-toggle:hover strong,
+  .hint-toggle:hover .hint-chevron {
+    color: var(--accent-deep);
+  }
+
+  .hint-toggle:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .hint-chevron {
+    font-size: 16px;
+    color: var(--accent);
+    transition: transform 0.18s ease, color 0.18s ease;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .hint.collapsed .hint-chevron {
+    transform: rotate(-90deg);
+  }
+
+  .hint.collapsed ul {
+    display: none;
+  }
+
+  /* === CONTENT ROWS (Step 1) === */
+  .content-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .content-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .verse-input {
+    width: 64px;
+    flex-shrink: 0;
+    padding: 10px 8px;
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    color: var(--accent);
+    text-align: center;
+    background: var(--bg-2);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    font-weight: 500;
+  }
+
+  .verse-input:focus {
+    border-color: var(--accent);
+    background: var(--paper);
+  }
+
+  .content-input {
+    flex: 1;
+    padding: 10px 14px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 42px;
+    font-family: inherit;
+  }
+
+  .content-input:focus {
+    border-color: var(--accent);
+  }
+
+  .row-remove {
+    width: 32px;
+    height: 42px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .row-remove:hover {
+    background: #F4E1D6;
+    color: var(--highlight);
+    border-color: #E8C9B5;
+  }
+
+  /* Up/down reorder buttons */
+  .row-move {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 1px;
+  }
+
+  .row-move button {
+    width: 24px;
+    height: 20px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: 2px;
+    padding: 0;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .row-move button:hover:not(:disabled) {
+    background: var(--bg-2);
+    color: var(--accent);
+    border-color: var(--rule);
+  }
+
+  .row-move button:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+  }
+
+  .add-row {
+    margin-top: 14px;
+    align-self: flex-start;
+    background: transparent;
+    border: 1px dashed var(--rule);
+    color: var(--accent);
+    padding: 8px 18px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+    transition: all 0.15s ease;
+  }
+
+  .add-row:hover {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--bg-2);
+  }
+
+  .row-counter {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .row-counter.warn { color: var(--highlight); }
+  .row-counter.ok { color: var(--accent); }
+
+  /* === SECTIONS (Step 2) === */
+  .sections {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .section-block {
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .section-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--accent);
+    width: 28px;
+    flex-shrink: 0;
+    text-align: center;
+    padding-top: 6px;
+    font-weight: 500;
+  }
+
+  .section-fields {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr) auto;
+    gap: 10px;
+    flex: 1;
+    align-items: start;
+  }
+
+  .section-verses {
+    /* width is set by the grid column */
+    padding: 12px 10px;
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--accent);
+    background: var(--bg-2);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    text-align: center;
+    font-weight: 500;
+    min-width: 0;
+  }
+
+  .section-verses:focus {
+    border-color: var(--accent);
+    background: var(--paper);
+  }
+
+  .section-summary {
+    padding: 12px 16px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.6;
+    min-width: 0;
+  }
+
+  .section-summary:focus {
+    border-color: var(--accent);
+  }
+
+  /* === TOPIC SENTENCE (Step 3) === */
+  .topic-wrap {
+    position: relative;
+  }
+
+  .topic-input {
+    width: 100%;
+    padding: 18px 22px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+  }
+
+  .topic-input:focus {
+    border-color: var(--accent);
+  }
+
+  .char-counter {
+    margin-top: 8px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  .char-counter.ok { color: var(--accent); font-weight: 500; }
+  .char-counter.warn { color: var(--highlight); }
+
+  /* === MAIN IDEA (Step 4) === */
+  .main-idea-wrap {
+    display: flex;
+    align-items: stretch;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .main-idea-prefix {
+    background: var(--bg-2);
+    padding: 16px 18px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 16px;
+    color: var(--accent);
+    font-weight: 500;
+    border-right: 1px solid var(--rule);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .main-idea-input {
+    flex: 1;
+    padding: 16px 18px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 16px;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    outline: none;
+    line-height: 1.7;
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .main-idea-wrap:focus-within {
+    border-color: var(--accent);
+  }
+
+  /* === APPLICATION (Step 5) === */
+  .applications {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .app-block {
+    display: flex;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .app-num {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--accent);
+    width: 28px;
+    flex-shrink: 0;
+    text-align: center;
+    padding-top: 8px;
+    font-weight: 500;
+  }
+
+  .app-input {
+    flex: 1;
+    padding: 14px 18px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.7;
+    resize: vertical;
+    min-height: 56px;
+  }
+
+  .app-input:focus {
+    border-color: var(--accent);
+  }
+
+  /* === SUMMARY VIEW (collapsible at bottom) === */
+  .summary-card {
+    background: linear-gradient(180deg, var(--paper) 0%, #F6F0E2 100%);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 36px;
+    margin-top: 36px;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft), var(--accent));
+  }
+
+  /* Shared grid columns so the header (綜覽 / At a glance) lines up
+     vertically with each row's (label / value) pair. Column 1 holds
+     the Chinese label/title at the left edge; column 2 holds the
+     English subtitle/value, all starting at the same horizontal position. */
+  .summary-card {
+    --summary-label-col: 88px;
+  }
+
+  .summary-head {
+    display: grid;
+    grid-template-columns: var(--summary-label-col) 1fr;
+    column-gap: 18px;
+    align-items: baseline;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .summary-title {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .summary-en {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    font-weight: 400;
+  }
+
+  .summary-grid {
+    display: grid;
+    gap: 22px;
+  }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: var(--summary-label-col) 1fr;
+    column-gap: 18px;
+    align-items: start;
+  }
+
+  .summary-label {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+
+  .summary-value {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.75;
+    white-space: pre-wrap;
+  }
+
+  .summary-value .empty {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .summary-value ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+
+  .summary-value li {
+    margin-bottom: 4px;
+  }
+
+  /* === TOAST === */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent-deep);
+    color: var(--paper);
+    padding: 12px 28px;
+    border-radius: 2px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    box-shadow: var(--shadow-lift);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* === FOOTER === */
+  footer.colophon {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* === LAYOUT MODES ===
+     1-column (default): everything stacks vertically in normal flow.
+     2-column: passage block stays sticky on the left while the user works
+               through the 5 steps on the right. */
+  .work-area {
+    /* default: pass-through container; children flow as block */
+  }
+
+  body.layout-2col .work-area {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 32px;
+  }
+
+  body.layout-2col .scripture-text {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    margin-bottom: 0;
+    /* Cap the height so a long passage scrolls inside its own card
+       instead of running off-screen. */
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+
+  /* Slimmer passage card padding in 2-col mode to make room */
+  body.layout-2col .scripture-text {
+    padding-right: 22px;
+  }
+
+  body.layout-2col .work-steps > .step {
+    margin-bottom: 24px;
+  }
+
+  body.layout-2col .work-steps > .step:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Hidden by default — only visible in mobile + 2-col mode. */
+  .mobile-resizer {
+    display: none;
+  }
+
+  /* On narrower screens, fall back to single-column even in 2-col mode
+     by default — UNLESS the user is in 雙欄 mode, in which case we apply
+     a split-pane layout: passage pinned to viewport top, draggable
+     divider, and Steps + 綜覽 scrolling below. */
+  @media (max-width: 980px) {
+    /* Pin the Scripture passage to the very top of the viewport. */
+    body.layout-2col .scripture-text {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--mobile-passage-height, 40vh);
+      z-index: 100;
+      overflow-y: auto;
+      margin: 0;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 18px 20px;
+    }
+
+    /* Show the draggable divider just below the fixed passage. */
+    body.layout-2col .mobile-resizer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: var(--mobile-passage-height, 40vh);
+      left: 0;
+      right: 0;
+      height: 18px;
+      z-index: 101;
+      background: var(--bg-2);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      cursor: ns-resize;
+      touch-action: none;
+      user-select: none;
+    }
+
+    body.layout-2col .mobile-resizer-grip {
+      display: block;
+      width: 44px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+      opacity: 0.55;
+      transition: opacity 0.15s ease;
+    }
+
+    body.layout-2col .mobile-resizer:hover .mobile-resizer-grip,
+    body.layout-2col .mobile-resizer:active .mobile-resizer-grip {
+      opacity: 1;
+    }
+
+    /* Push everything else below the fixed passage + resizer. */
+    body.layout-2col .container {
+      padding-top: calc(var(--mobile-passage-height, 40vh) + 26px);
+    }
+
+    /* Reset the work-area to normal block flow so steps + summary scroll naturally. */
+    body.layout-2col .work-area {
+      display: block;
+    }
+  }
+
+  /* === PRINT === */
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+    .toolbar, .add-row, .row-remove, .row-move { display: none; }
+    .step { box-shadow: none; page-break-inside: avoid; border-color: #ccc; }
+    .scripture-ref { box-shadow: none; }
+    header.masthead { padding-top: 0; }
+    .hint { display: none; }
+    /* Scripture text block in print */
+    .scripture-text { box-shadow: none; border-color: #ccc; page-break-inside: avoid; }
+    .scripture-text::before { display: none; }
+    .st-translation, .st-actions, .st-rcuv-notice, .st-edit { display: none !important; }
+    .st-passage { background: none; }
+    input, textarea {
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid #ccc !important;
+      border-radius: 0 !important;
+    }
+    .summary-card { page-break-before: always; }
+    /* Force single-column flow on the printed page even if user is viewing 2-col. */
+    body.layout-2col .work-area {
+      display: block;
+    }
+    body.layout-2col .scripture-text {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+    }
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 640px) {
+    body { padding: 24px 12px 64px; }
+    .step { padding: 24px 20px 22px; }
+    .step-head { gap: 14px; }
+    .step-num { font-size: 30px; }
+    .step-title { font-size: 20px; }
+    .scripture-ref { padding: 18px 20px; flex-direction: column; align-items: flex-start; }
+    .summary-row { grid-template-columns: 1fr; gap: 4px; }
+    .main-idea-wrap { flex-direction: column; }
+    .main-idea-prefix { border-right: none; border-bottom: 1px solid var(--rule); }
+    .summary-card { padding: 24px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="masthead">
+    <div class="eyebrow">Bible Study Fellowship · Homiletics</div>
+    <h1 class="title">經文分析</h1>
+    <div class="subtitle">A worksheet for <span class="em">Scripture analysis</span> &mdash; Content, Divisions, Subject Sentence, Aim, Applications</div>
+    <div class="switchers-row">
+      <div class="lang-switcher" id="langSwitcher">
+        <label data-lang="TC" class="active"><input type="radio" name="lang" value="TC" checked>繁體中文</label>
+        <label data-lang="SC"><input type="radio" name="lang" value="SC">简体中文</label>
+      </div>
+      <div class="layout-switcher" id="layoutSwitcher">
+        <label data-layout="1col" class="active" title="單欄檢視"><input type="radio" name="layout" value="1col" checked>單欄</label>
+        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄</label>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" onclick="loadExample()">載入範例 (羅馬書 13:8-14)</button>
+      <button class="btn" onclick="exportJSON()">儲存內容</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">開啟過往內容</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+      <button class="btn" onclick="window.print()">列印 / 存為 PDF</button>
+      <button class="btn danger" onclick="clearAll()">清除全部</button>
+    </div>
+  </header>
+
+  <!-- SCRIPTURE REF -->
+  <div class="scripture-ref">
+    <div class="sr-head">
+      <h3 class="sr-title">經文 <span class="sr-en">Scripture</span></h3>
+      <div class="sr-mode" id="scriptureMode">
+        <label data-mode="manual" class="active" title="自行輸入經文"><input type="radio" name="scrMode" value="manual" checked>手動輸入</label>
+        <label data-mode="bsf" title="自動載入本週 BSF 學習經文"><input type="radio" name="scrMode" value="bsf">本週 BSF</label>
+      </div>
+    </div>
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14   或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
+  </div>
+
+  <!-- WORK AREA: contains the Passage block + 5 Steps.
+       In 1-column mode, everything stacks vertically as before.
+       In 2-column mode (body.layout-2col), this becomes a CSS Grid where
+       the Passage stays sticky on the left and the 5 Steps stack on the right. -->
+  <div class="work-area">
+
+  <!-- SCRIPTURE TEXT -->
+  <div class="scripture-text">
+    <div class="st-head">
+      <div class="st-title-group">
+        <h3 class="st-title">經文內文 <span class="st-en">Passage</span></h3>
+        <div class="st-translation" id="stTranslation">
+          <label data-trans="CUNP" class="active"><input type="radio" name="trans" value="CUNP" checked>新標點和合本</label>
+          <label data-trans="CUV"><input type="radio" name="trans" value="CUV">和合本</label>
+          <label data-trans="RCUV"><input type="radio" name="trans" value="RCUV">和合本修訂版</label>
+        </div>
+      </div>
+      <div class="st-actions">
+        <button class="btn primary" id="btnLoad" onclick="loadVerses()">讀取經文</button>
+        <button class="btn" onclick="toggleEdit()" id="btnEdit">✎ 編輯</button>
+      </div>
+    </div>
+    <div class="st-rcuv-notice" id="rcuvNotice" style="display:none">
+      《和合本修訂版》（RCUV, 2010）至今由香港聖經公會持有版權。請點擊下方連結前往其官方網站，將經文複製後貼到下方文字框中。
+      <br>
+      <a href="#" target="_blank" rel="noopener" class="rcuv-link" id="rcuvLink">前往 RCUV 官網 ↗</a>
+    </div>
+    <div class="st-passage no-i18n" id="stPassage">
+      <span class="st-empty">在上方欄位輸入經文出處（如「羅馬書 13:8-14」）後，點擊「讀取經文」</span>
+    </div>
+    <textarea class="st-edit no-i18n" id="stEdit" style="display:none" placeholder="貼上或編輯經文… 例如：&#10;8 凡事都不可虧欠人，惟有彼此相愛要常以為虧欠…" oninput="onEditInput()"></textarea>
+    <div class="st-hint">提示：在經文中選取關鍵字句，可一鍵加入下方「內容列項」</div>
+    <div class="st-attribution" id="stAttribution"></div>
+  </div>
+
+  <!-- Draggable divider — only visible in mobile + 2-column mode.
+       Above it the Scripture passage is pinned to the viewport top;
+       below it Steps I-V and 綜覽 scroll. User drags to resize. -->
+  <div class="mobile-resizer" id="mobileResizer" aria-hidden="true">
+    <span class="mobile-resizer-grip"></span>
+  </div>
+
+  <!-- WORK STEPS: holds the 5 steps. In 2-col mode, this becomes the right column. -->
+  <div class="work-steps">
+
+  <!-- STEP 1: CONTENT -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">I</div>
+      <div class="step-head-text">
+        <h2 class="step-title">內容列項 <span class="step-en">Content</span></h2>
+        <div class="step-tagline">列出經文論及的主題或事件 &middot; <span class="en">List of topics or events</span></div>
+      </div>
+    </div>
+    <div class="hint">
+      <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
+      <ul>
+        <li>列出 10–20 項</li>
+        <li>只列出事實</li>
+        <li>思考並摘取內容要點</li>
+        <li>留意經文中重複出現的詞語</li>
+      </ul>
+    </div>
+    <div class="content-rows" id="contentRows"></div>
+    <div style="display:flex; align-items:center; flex-wrap:wrap;">
+      <button class="add-row" onclick="addContentRow()">+ 加一行</button>
+      <span class="row-counter" id="contentCounter">0 項</span>
+    </div>
+  </div>
+
+  <!-- STEP 2: SECTIONS -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">II</div>
+      <div class="step-head-text">
+        <h2 class="step-title">分段 <span class="step-en">Divisions</span></h2>
+        <div class="step-tagline">簡明的摘要句 &middot; <span class="en">Summary sentences</span></div>
+      </div>
+    </div>
+    <div class="hint">
+      <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
+      <ul>
+        <li>二到四個段落</li>
+        <li>僅陳述事實</li>
+        <li>將經文分成幾個小段落</li>
+        <li>用完整的句子表達</li>
+        <li>標注各段落涵蓋的經節</li>
+      </ul>
+    </div>
+    <div class="sections" id="sections"></div>
+    <div style="display:flex; align-items:center; flex-wrap:wrap;">
+      <button class="add-row" onclick="addSection()">+ 加一段</button>
+      <span class="row-counter" id="sectionCounter">0 段</span>
+    </div>
+  </div>
+
+  <!-- STEP 3: TOPIC SENTENCE -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">III</div>
+      <div class="step-head-text">
+        <h2 class="step-title">主題句 <span class="step-en">Subject Sentence</span></h2>
+        <div class="step-tagline">整段經文摘要 &middot; <span class="en">Passage summary</span></div>
+      </div>
+    </div>
+    <div class="hint">
+      <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
+      <ul>
+        <li>10–25 個字</li>
+        <li>僅陳述事實</li>
+        <li>濃縮各分段句</li>
+        <li>足以辨識經文出處</li>
+        <li>凸顯這段經文的獨到之處</li>
+      </ul>
+    </div>
+    <div class="topic-wrap">
+      <textarea id="topic" class="topic-input" rows="2" placeholder="一句完整的句子（主詞＋動詞＋句點）濃縮及精簡這段經文⋯" oninput="updateTopicCounter(); save()"></textarea>
+      <div class="char-counter" id="topicCounter">0 字 &middot; 目標 10–25</div>
+    </div>
+  </div>
+
+  <!-- STEP 4: MAIN IDEA -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">IV</div>
+      <div class="step-head-text">
+        <h2 class="step-title">主旨 <span class="step-en">Aim</span></h2>
+        <div class="step-tagline">主要真理或原則 &middot; <span class="en">Main truth or principle</span></div>
+      </div>
+    </div>
+    <div class="hint">
+      <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
+      <ul>
+        <li>作者要闡明的主要真理</li>
+        <li>貫穿整段經文</li>
+        <li>教義正確</li>
+        <li>關於上帝或人</li>
+      </ul>
+    </div>
+    <div class="main-idea-wrap">
+      <span class="main-idea-prefix">使觀眾能學到</span>
+      <textarea id="mainIdea" class="main-idea-input" rows="3" placeholder="（聽眾在聽完課程後學到的主要真理）" oninput="save()"></textarea>
+    </div>
+  </div>
+
+  <!-- STEP 5: APPLICATION -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">V</div>
+      <div class="step-head-text">
+        <h2 class="step-title">應用 <span class="step-en">Applications</span></h2>
+        <div class="step-tagline">以問題激勵聽眾做出改變 &middot; <span class="en">Questions motivating change</span></div>
+      </div>
+    </div>
+    <div class="hint">
+      <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
+      <ul>
+        <li>以問句的形式表達</li>
+        <li>每個段落提出一個問題</li>
+        <li>針對人心靈</li>
+        <li>注意均衡，考慮聽眾是誰</li>
+      </ul>
+    </div>
+    <div class="applications" id="applications"></div>
+    <div style="display:flex; align-items:center; flex-wrap:wrap;">
+      <button class="add-row" onclick="addApplication()">+ 加一個問題</button>
+      <span class="row-counter" id="appCounter">0 題</span>
+    </div>
+  </div>
+
+  </div><!-- /.work-steps -->
+  </div><!-- /.work-area -->
+
+  <!-- LIVE SUMMARY -->
+  <div class="summary-card">
+    <div class="summary-head">
+      <h3 class="summary-title">綜覽</h3>
+      <span class="summary-en">At a glance</span>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-row">
+        <div class="summary-label">經文</div>
+        <div class="summary-value no-i18n" id="sumScripture"><span class="empty">尚未填寫</span></div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">分段</div>
+        <div class="summary-value no-i18n" id="sumSections"><span class="empty">尚未填寫</span></div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">主題句</div>
+        <div class="summary-value no-i18n" id="sumTopic"><span class="empty">尚未填寫</span></div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">主旨</div>
+        <div class="summary-value no-i18n" id="sumMainIdea"><span class="empty">尚未填寫</span></div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-label">應用</div>
+        <div class="summary-value no-i18n" id="sumApps"><span class="empty">尚未填寫</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="colophon">
+    Bible Study Fellowship &middot; S 106 Homiletics &middot; Adapted as an interactive worksheet
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<button class="hl-popup" id="hlPopup" type="button">+ 加入內容列項</button>
+
+<script>
+  // ========== STORAGE LAYER ==========
+  // Use window.storage if available (Claude artifacts), else localStorage (downloaded file)
+  const hasClaudeStorage = typeof window !== 'undefined' &&
+    typeof window.storage !== 'undefined' &&
+    typeof window.storage.set === 'function';
+
+  const STORAGE_KEY = 'bsf_homiletics_v1';
+
+  async function storageSet(key, value) {
+    if (hasClaudeStorage) {
+      try { await window.storage.set(key, value); } catch (e) {}
+    } else {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
+  }
+
+  async function storageGet(key) {
+    if (hasClaudeStorage) {
+      try {
+        const r = await window.storage.get(key);
+        return r ? r.value : null;
+      } catch (e) { return null; }
+    } else {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+  }
+
+  // ========== I18N: TRADITIONAL ↔ SIMPLIFIED CHINESE ==========
+  // Curated character map covering all Chinese chars used in this worksheet's UI
+  // (UI labels, hints, buttons, toasts, alerts, error messages, Bible book names).
+  // User-typed content and the Bolls-fetched passage are handled separately.
+  const TC2SC = {
+    // Common UI vocabulary
+    '經':'经','內':'内','項':'项','應':'应','題':'题','個':'个','為':'为','時':'时',
+    '當':'当','說':'说','學':'学','會':'会','點':'点','實':'实','從':'从','將':'将',
+    '過':'过','開':'开','關':'关','後':'后','記':'记','識':'识','義':'义','書':'书',
+    '聖':'圣','靈':'灵','處':'处','標':'标','範':'范','載':'载','讀':'读','編':'编',
+    '輯':'辑','網':'网','複':'复','動':'动','對':'对','變':'变','復':'复','寫':'写',
+    '彌':'弥','歷':'历','獨':'独','猶':'犹','眾':'众','蓋':'盖','蘇':'苏','觀':'观',
+    '詞':'词','詩':'诗','認':'认','誰':'谁','語':'语','誡':'诫','請':'请','貫':'贯',
+    '輸':'输','闡':'阐','顯':'显','馬':'马','鴻':'鸿','麗':'丽','並':'并','體':'体',
+    '親':'亲','樣':'样','們':'们','給':'给','進':'进','與':'与','還':'还','強':'强',
+    '圖':'图','軟':'软','約':'约','響':'响','線':'线','構':'构','審':'审','風':'风',
+    '聲':'声','驅':'驱','驗':'验','長':'长','門':'门','間':'间','閉':'闭','閣':'阁',
+    '閱':'阅','闊':'阔','雜':'杂','離':'离','難':'难','順':'顺','須':'须','頭':'头',
+    '頸':'颈','顆':'颗','額':'额','顏':'颜','願':'愿','類':'类','顧':'顾','飛':'飞',
+    '飯':'饭','飲':'饮','飽':'饱','館':'馆','駐':'驻','駕':'驾','駛':'驶','騎':'骑',
+    '騙':'骗','鬆':'松','鬱':'郁','鬥':'斗','魚':'鱼','鳥':'鸟','鳴':'鸣','鵝':'鹅',
+    '鶴':'鹤','鷹':'鹰','黨':'党','齊':'齐','齒':'齿','龍':'龙',
+
+    // More common chars in BSF/UI text
+    '訂':'订','詢':'询','試':'试','詳':'详','許':'许','設':'设','訪':'访','訴':'诉',
+    '誌':'志','誇':'夸','誤':'误','誘':'诱','諸':'诸','諾':'诺','謀':'谋','謊':'谎',
+    '謂':'谓','講':'讲','謝':'谢','謹':'谨','證':'证','譜':'谱','譯':'译','護':'护',
+    '讓':'让','讚':'赞','詛':'诅','詠':'咏','詰':'诘','負':'负','財':'财','貢':'贡',
+    '貧':'贫','貨':'货','販':'贩','責':'责','貯':'贮','貴':'贵','買':'买','貸':'贷',
+    '費':'费','貼':'贴','貿':'贸','賀':'贺','賂':'赂','資':'资','賓':'宾','賜':'赐',
+    '賢':'贤','賣':'卖','賤':'贱','賦':'赋','質':'质','賴':'赖','賺':'赚','賽':'赛',
+    '購':'购','贈':'赠','贊':'赞','贏':'赢',
+
+    // Verbs and modifiers
+    '歸':'归','歡':'欢','殺':'杀','毀':'毁','氣':'气','潔':'洁','潛':'潜','濃':'浓',
+    '濕':'湿','濟':'济','溫':'温','滅':'灭','滿':'满','歲':'岁','嶺':'岭','帥':'帅',
+    '幣':'币','幾':'几','廠':'厂','廢':'废','廣':'广','廳':'厅','廬':'庐','導':'导',
+    '尋':'寻','專':'专','屬':'属','層':'层',
+
+    // Body / senses / nature
+    '膚':'肤','膽':'胆','腦':'脑','腳':'脚','臘':'腊','臟':'脏','臍':'脐','臨':'临',
+    '聽':'听','聾':'聋','職':'职','聯':'联','肅':'肃',
+
+    // Building characters seen in hints / content
+    '結':'结','維':'维','緊':'紧','緩':'缓','繪':'绘','繼':'继','續':'续','總':'总',
+    '綠':'绿','緻':'致','綁':'绑','緣':'缘','緝':'缉','綜':'综','緒':'绪','綱':'纲',
+    '綿':'绵','繁':'繁','纖':'纤','糾':'纠','級':'级',
+
+    // Bible book names (extras not yet listed)
+    '創':'创','數':'数','亞':'亚','師':'师','紀':'纪','賽':'赛','哀':'哀','結':'结',
+    '珥':'珥','迦':'迦','瑪':'玛','傳':'传','箴':'箴','歷':'历','號':'号','錄':'录',
+    '錯':'错','錢':'钱','鐘':'钟','鐵':'铁','釋':'释','針':'针','銀':'银','銅':'铜',
+    '銘':'铭','銷':'销','鋒':'锋','鋼':'钢','鎖':'锁','鎮':'镇','鏡':'镜','鏈':'链',
+    '釋':'释',
+
+    // More UI specific
+    '無':'无','圍':'围','國':'国','園':'园','團':'团','圓':'圆','場':'场','塊':'块',
+    '墳':'坟','墜':'坠','嬰':'婴','嶼':'屿','嶽':'岳','峽':'峡','岸':'岸','龐':'庞',
+    '應':'应','憶':'忆','慮':'虑','憐':'怜','憤':'愤','態':'态','戰':'战','戲':'戏',
+    '懷':'怀','懸':'悬','懼':'惧','懶':'懒','戀':'恋','憲':'宪',
+    '欄':'栏','權':'权','樂':'乐','機':'机','標':'标','業':'业','樣':'样','樓':'楼',
+    '橫':'横','檯':'台','檢':'检','檔':'档','櫃':'柜','櫥':'橱','櫻':'樱','權':'权',
+    '殘':'残','殞':'殒','殼':'壳','毆':'殴','母':'母','毋':'毋','畫':'画','畢':'毕',
+    '當':'当','疊':'叠','癡':'痴','癩':'癞','登':'登','發':'发','髮':'发','監':'监',
+    '盡':'尽','盤':'盘','盧':'卢','睪':'睾','睜':'睁','瞭':'了','矚':'瞩','短':'短',
+    '矯':'矫','磚':'砖','礎':'础','礙':'碍','礦':'矿','礫':'砾','礙':'碍','禪':'禅',
+    '禮':'礼','禱':'祷','秘':'秘','稱':'称','穀':'谷','種':'种','積':'积','穩':'稳',
+    '穫':'获','窩':'窝','窮':'穷','竊':'窃','竪':'竖','競':'竞','筆':'笔','筍':'笋',
+    '節':'节','範':'范','築':'筑','篩':'筛','簽':'签','簾':'帘','簿':'簿','籌':'筹',
+    '籍':'籍','籠':'笼','糧':'粮','糾':'纠','紀':'纪','紅':'红','級':'级','約':'约',
+    '紙':'纸','純':'纯','紛':'纷','索':'索','緊':'紧','緣':'缘','編':'编','緣':'缘',
+    '繡':'绣','繭':'茧','繞':'绕','繪':'绘','繫':'系','纏':'缠',
+
+    // Stragglers / completeness
+    '邊':'边','遞':'递','遲':'迟','選':'选','遠':'远','遷':'迁','違':'违','適':'适',
+    '達':'达','遺':'遗','還':'还','遴':'遴','遼':'辽','邁':'迈','邏':'逻','酸':'酸',
+    '醜':'丑','醞':'酝','醫':'医','釀':'酿','鑑':'鉴','鑒':'鉴','鋸':'锯','鏗':'铿',
+    '錦':'锦','銳':'锐','銹':'锈','閘':'闸','閥':'阀','闖':'闯','陣':'阵','陳':'陈',
+    '陸':'陆','陰':'阴','陽':'阳','際':'际','障':'障','隔':'隔','際':'际','隨':'随',
+    '險':'险','隱':'隐','隻':'只','雋':'隽','雛':'雏','雞':'鸡','雙':'双','離':'离',
+    '韋':'韦','韓':'韩','韻':'韵','頎':'颀','頓':'顿','預':'预','頻':'频','頒':'颁',
+    '頂':'顶','頃':'顷','顎':'颚','顛':'颠','顫':'颤','驕':'骄','驟':'骤','驢':'驴',
+    '骯':'肮','骷':'骷','骸':'骸','髒':'脏','髻':'髻','鬚':'须','魂':'魂','鯨':'鲸',
+    '鴉':'鸦','鴨':'鸭','鴨':'鸭','鶯':'莺','鸚':'鹦','鹵':'卤','麥':'麦','麵':'面',
+    '黃':'黄','黎':'黎','點':'点','黴':'霉','黷':'黩','黻':'黻','黽':'黾','鼎':'鼎',
+    '鼕':'冬','龐':'庞',
+
+    // Additional UI characters discovered during testing
+    '羅':'罗','儲':'储','啟':'启','擊':'击','連':'连','製':'制','鍵':'键',
+    '論':'论','現':'现','簡':'简','僅':'仅','縮':'缩','這':'这','話':'话',
+    '則':'则','確':'确','課':'课','問':'问','勵':'励','覽':'览','於':'于',
+    '虧':'亏','無':'无','沒':'没','敗':'败','檢':'检','檔':'档','貼':'贴',
+    '愛':'爱','寫':'写','錄':'录','錯':'错','針':'针','慮':'虑','議':'议',
+    '欄':'栏','後':'后','闡':'阐','顯':'显','貫':'贯','關':'关','編':'编',
+    '輯':'辑','讀':'读','詢':'询','講':'讲','謝':'谢','護':'护','讓':'让',
+    '錢':'钱','銀':'银','驕':'骄','驗':'验','飛':'飞','飯':'饭','顯':'显',
+    '頭':'头','類':'类','顧':'顾','願':'愿','類':'类','齒':'齿','體':'体',
+    '專':'专','韻':'韵','響':'响','驗':'验','陳':'陈','際':'际','隨':'随',
+    '險':'险','隱':'隐','隻':'只','頓':'顿','預':'预','顆':'颗','頻':'频',
+    '聽':'听','滿':'满','潔':'洁','濃':'浓','穩':'稳','綠':'绿','維':'维',
+    '緊':'紧','繼':'继','總':'总','綜':'综','緒':'绪','綿':'绵','繁':'繁',
+    '結':'结','級':'级','約':'约','給':'给','紙':'纸','純':'纯','紅':'红',
+    '繩':'绳','繪':'绘','繞':'绕','繁':'繁','纖':'纤','糾':'纠','纏':'缠',
+    '紀':'纪','級':'级','紛':'纷','緣':'缘','編':'编','緊':'紧','繞':'绕',
+    '繪':'绘','繭':'茧','繼':'继','繩':'绳','纖':'纤','糾':'纠','級':'级',
+    '處':'处','虛':'虚','號':'号','蝸':'蜗','蟬':'蝉','蟲':'虫','蠅':'蝇',
+    '蠶':'蚕','蠟':'蜡','蠻':'蛮','蝦':'虾','藥':'药','藍':'蓝','蘭':'兰',
+    '蕩':'荡','薦':'荐','藥':'药','藏':'藏','蘋':'苹','螢':'萤','蠟':'蜡',
+    '裝':'装','製':'制','補':'补','視':'视','親':'亲','觀':'观','覺':'觉',
+    '譯':'译','譽':'誉','護':'护','變':'变','讓':'让','讀':'读',
+
+    // Bible passage common chars (for safety, even though passage uses different slug)
+    '愛':'爱','滅':'灭','過':'过','歲':'岁','離':'离','飛':'飞','驚':'惊',
+    '寶':'宝','權':'权','響':'响','陽':'阳','陰':'阴','際':'际','除':'除',
+    '隨':'随','險':'险','隱':'隐','贏':'赢','貴':'贵','賺':'赚','賜':'赐',
+    '質':'质','賓':'宾','賒':'赊','賜':'赐','賦':'赋','貢':'贡','貯':'贮',
+    '賢':'贤','資':'资','贊':'赞','負':'负','財':'财','貧':'贫','貨':'货',
+    '責':'责','貴':'贵','買':'买','貸':'贷','費':'费','貼':'贴','贈':'赠',
+
+    // Critical additions for Bible passage text rendered client-side in SC mode.
+    // Without these, fetched TC text contains characters that have no SC fallback
+    // and end up rendered in a system font with different metrics.
+    '來':'来','見':'见','帶':'带','領':'领','穌':'稣','裡':'里','裏':'里',
+    '華':'华','夢':'梦','參':'参','慘':'惨','匯':'汇','贖':'赎','預':'预',
+    '舉':'举','艱':'艰','義':'义','彎':'弯','灣':'湾','邏':'逻','邁':'迈',
+    '醜':'丑','銀':'银','錢':'钱','錶':'表','鎮':'镇','鋼':'钢','鋸':'锯',
+    '鋅':'锌','鎖':'锁','鏈':'链','鏡':'镜','釣':'钓','釘':'钉','釵':'钗',
+    '雞':'鸡','雛':'雏','韋':'韦','顆':'颗','馴':'驯','駱':'骆','駝':'驼',
+    // Romans 13:8-14 specific characters (and other common Bible text):
+    '該':'该','姦':'奸','盜':'盗','貪':'贪','曉':'晓','晝':'昼',
+    '脫':'脱','競':'竞','縱':'纵','慾':'欲','偷':'偷','傲':'傲',
+    '婪':'婪','嫉':'嫉','妒':'妒','邪':'邪','蕩':'荡','醉':'醉','酒':'酒',
+    '宴':'宴','荒':'荒','戴':'戴','披':'披','基':'基','督':'督','耶':'耶',
+    '兵':'兵','器':'器','光':'光','暗':'暗','昧':'昧','夜':'夜','白':'白',
+    '行':'行','事':'事','正':'正','端':'端','睡':'睡','醒':'醒','救':'救',
+    '近':'近','深':'深','黑':'黑','放':'放','私':'私','怒':'怒','妻':'妻',
+    '夫':'夫','兒':'儿','女':'女','婚':'婚','姻':'姻','家':'家','信':'信',
+    '心':'心','望':'望','靈':'灵','魂':'魂','犯':'犯','錯':'错','悔':'悔',
+    '改':'改','罪':'罪','惡':'恶','善':'善','義':'义','潔':'洁','清':'清',
+    '爭':'争','戰':'战','勝':'胜','負':'负','勢':'势','將':'将','獸':'兽',
+    '寬':'宽','慰':'慰','憐':'怜','憫':'悯','憎':'憎','懊':'懊','懇':'恳',
+    '懼':'惧','懷':'怀','戀':'恋','悅':'悦','憂':'忧','憤':'愤','慶':'庆',
+    '應':'应','德':'德','悲':'悲','慚':'惭','愧':'愧','恥':'耻','恭':'恭',
+    '細':'细','綱':'纲','維':'维','繪':'绘','繡':'绣','纖':'纤','緒':'绪',
+    '嘗':'尝','準':'准','嗎':'吗','麼':'么','啊':'啊','嘛':'嘛','嗯':'嗯',
+    '單':'单','週':'周','誕':'诞',
+    '騾':'骡','驢':'驴','骸':'骸','髒':'脏','髮':'发','鬚':'须','魂':'魂',
+    '鯨':'鲸','鯽':'鲫','鳩':'鸠','鴿':'鸽','鵲':'鹊','鶯':'莺','鸚':'鹦',
+    '鸛':'鹳','鹼':'碱','麥':'麦','麵':'面','麼':'么','黴':'霉','齡':'龄',
+    '齋':'斋','龕':'龛','穫':'获','藹':'蔼','蘊':'蕴','蘿':'萝','虜':'虏',
+    '蛺':'蛱','蛻':'蜕','蟻':'蚁','蠅':'蝇','蠶':'蚕','蠻':'蛮','袞':'衮',
+    '裝':'装','補':'补','裹':'裹','褲':'裤','襪':'袜','襯':'衬','襲':'袭',
+    '覓':'觅','覩':'睹','覺':'觉','覽':'览','覿':'觌','觀':'观','觴':'觞',
+    '譽':'誉','譴':'谴','護':'护','讖':'谶','讚':'赞','谷':'谷','豈':'岂',
+    '豎':'竖','豢':'豢','貢':'贡','貯':'贮','貰':'贳','貲':'赀','貳':'贰',
+    '貶':'贬','貺':'贶','貽':'贻','賂':'赂','賃':'赁','賈':'贾','賊':'贼',
+    '賑':'赈','賒':'赊','賓':'宾','賞':'赏','賤':'贱','賦':'赋','賭':'赌',
+    '賴':'赖','賻':'赙','賺':'赚','賽':'赛','贅':'赘','贍':'赡','贓':'赃',
+    '贖':'赎','贗':'赝','贛':'赣','赬':'赪','趙':'赵','趕':'赶','趨':'趋',
+    '蹌':'跄','蹕':'跸','蹣':'蹒','蹤':'踪','躍':'跃','輒':'辄','輓':'挽',
+    '輝':'辉','輩':'辈','輪':'轮','輾':'辗','轂':'毂','轄':'辖','轅':'辕',
+    '轆':'辘','轍':'辙','轎':'轿','辦':'办','遜':'逊','遠':'远','遲':'迟',
+    '遴':'遴','選':'选','遺':'遗','還':'还','邇':'迩','邊':'边','鄒':'邹',
+    '鄔':'邬','鄖':'郧','鄧':'邓','鄭':'郑','鄰':'邻','鄲':'郸','酇':'酂',
+    '醞':'酝','醫':'医','醬':'酱','釀':'酿','釁':'衅','釋':'释','鈍':'钝',
+    '鈕':'钮','鉅':'巨','鉤':'钩','銜':'衔','銬':'铐','銼':'锉','錦':'锦',
+    '錮':'锢','鍋':'锅','鍵':'键','鎏':'镏','鏟':'铲','鐘':'钟','鐺':'铛',
+    '鑄':'铸','鑑':'鉴','鑒':'鉴','鑣':'镳','閣':'阁','閥':'阀','閩':'闽',
+    '閬':'阆','閱':'阅','閹':'阉','閽':'阍','閻':'阎','闕':'阙','闖':'闯',
+    '陣':'阵','陳':'陈','陸':'陆','陽':'阳','際':'际','障':'障','陰':'阴',
+    '雜':'杂','雞':'鸡','雙':'双','韃':'鞑','韌':'韧','頎':'颀','頒':'颁',
+    '頌':'颂','頗':'颇','領':'领','頦':'颏','頷':'颔','頹':'颓','頻':'频',
+    '顎':'颚','顓':'颛','顛':'颠','顧':'顾','顥':'颢','顫':'颤','颺':'飏',
+    '飪':'饪','飭':'饬','飼':'饲','飽':'饱','飾':'饰','餃':'饺','餅':'饼',
+    '餉':'饷','養':'养','餌':'饵','餒':'馁','餓':'饿','餘':'余','餞':'饯',
+    '餛':'馄','餡':'馅','餵':'喂','饃':'馍','饋':'馈','饑':'饥','饒':'饶',
+    '饗':'飨','饞':'馋','馱':'驮','馴':'驯','馳':'驰','駁':'驳','駑':'驽',
+    '駒':'驹','駝':'驼','駭':'骇','駿':'骏','騁':'骋','騙':'骗','騤':'骙',
+    '騫':'骞','騷':'骚','騸':'骟','騾':'骡','驁':'骜','驍':'骁','驏':'骣',
+    '驕':'骄','驚':'惊','驛':'驿','驟':'骤','驤':'骧','驥':'骥','骯':'肮',
+    '髏':'髅','髒':'脏','體':'体','髖':'髋','髪':'发','鬆':'松','鬚':'须',
+    '鬢':'鬓','鬥':'斗','鯊':'鲨','鯽':'鲫','鯨':'鲸','鰓':'鳃','鱉':'鳖',
+    '鱔':'鳝','鱖':'鳜','鱗':'鳞','鱘':'鲟','鳥':'鸟','鳩':'鸠','鳳':'凤',
+    '鳴':'鸣','鳶':'鸢','鴆':'鸩','鴉':'鸦','鴕':'鸵','鴛':'鸳','鴦':'鸯',
+    '鴨':'鸭','鴯':'鸸','鴰':'鸹','鴿':'鸽','鵑':'鹃','鵝':'鹅','鵠':'鹄',
+    '鵡':'鹉','鵪':'鹌','鵬':'鹏','鵲':'鹊','鶉':'鹑','鶘':'鹕','鶚':'鹗',
+    '鶩':'鹜','鶯':'莺','鶴':'鹤','鷂':'鹞','鷓':'鹧','鷗':'鸥','鷥':'鹭',
+    '鷹':'鹰','鷺':'鹭','鸚':'鹦','麥':'麦','麩':'麸','麪':'面','黌':'黉',
+    '黨':'党','黷':'黩','黽':'黾','鼴':'鼹','齋':'斋','齒':'齿','齟':'龃',
+    '齣':'出','齡':'龄','齪':'龊','齷':'龌','龐':'庞','龔':'龚','龕':'龛'
+  };
+
+  function toSC(text) {
+    if (!text) return text;
+    return text.split('').map(c => TC2SC[c] || c).join('');
+  }
+
+  // tx() — translate a static Chinese string based on current language.
+  // Used for dynamically generated UI strings (toasts, alerts, counter labels, etc.)
+  function tx(text) {
+    if (state.lang === 'SC') return toSC(text);
+    return text;
+  }
+
+  // applyLang() — walks the DOM and applies SC conversion to all static UI text.
+  // Skips: input/textarea elements, .no-i18n regions, .st-en/.sr-en/.step-en (English subtitles),
+  //        and language toggle labels themselves.
+  const _i18nOriginals = new WeakMap();
+  function applyLang(lang) {
+    state.lang = lang;
+    document.documentElement.lang = (lang === 'SC') ? 'zh-Hans' : 'zh-Hant';
+
+    // Update the toggle UI
+    document.querySelectorAll('#langSwitcher label').forEach(lbl => {
+      lbl.classList.toggle('active', lbl.dataset.lang === lang);
+      const r = lbl.querySelector('input');
+      if (r) r.checked = (lbl.dataset.lang === lang);
+    });
+
+    // Walk text nodes for translation
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) => {
+          const parent = node.parentElement;
+          if (!parent) return NodeFilter.FILTER_REJECT;
+          // Skip user-input fields and no-i18n regions
+          if (parent.closest('textarea, input, .no-i18n, .st-en, .sr-en, .step-en, #langSwitcher')) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          // Skip empty/whitespace text nodes
+          if (!node.nodeValue.trim()) return NodeFilter.FILTER_SKIP;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+    let node;
+    while (node = walker.nextNode()) {
+      if (!_i18nOriginals.has(node)) {
+        _i18nOriginals.set(node, node.nodeValue);
+      }
+      const original = _i18nOriginals.get(node);
+      node.nodeValue = (lang === 'SC') ? toSC(original) : original;
+    }
+
+    // Translate placeholder and title attributes
+    document.querySelectorAll('[placeholder]').forEach(el => {
+      if (el.closest('.no-i18n')) return;
+      if (!el.dataset.origPlaceholder) el.dataset.origPlaceholder = el.placeholder;
+      el.placeholder = (lang === 'SC') ? toSC(el.dataset.origPlaceholder) : el.dataset.origPlaceholder;
+    });
+    document.querySelectorAll('[title]').forEach(el => {
+      if (el.closest('.no-i18n')) return;
+      if (!el.dataset.origTitle) el.dataset.origTitle = el.title;
+      el.title = (lang === 'SC') ? toSC(el.dataset.origTitle) : el.dataset.origTitle;
+    });
+  }
+
+  // ========== STATE ==========
+  let state = {
+    scripture: '',
+    translation: 'CUNP',     // 'CUNP' | 'CUV' | 'RCUV' (in TC) or 'CUNPSS' | 'CUVS' | 'RCUV' (in SC)
+    lang: 'TC',              // 'TC' | 'SC' — UI language and Bible passage script
+    passage: '',             // Pre-rendered HTML or plain text of fetched/pasted verses
+    passageEditable: '',     // Plain-text editable version
+    content: [],             // [{verse, text}, ...]
+    sections: [],            // [{verses, summary}, ...]
+    topic: '',
+    mainIdea: '',
+    applications: []         // [string, ...]
+  };
+
+  // ========== BIBLE BOOKS (Chinese name → bookId for bolls.life) ==========
+  const BOOK_MAP = {
+    // Old Testament
+    '創世記': 1, '創世': 1, '創': 1,
+    '出埃及記': 2, '出埃及': 2, '出': 2,
+    '利未記': 3, '利未': 3, '利': 3,
+    '民數記': 4, '民數': 4, '民': 4,
+    '申命記': 5, '申命': 5, '申': 5,
+    '約書亞記': 6, '約書亞': 6, '書': 6,
+    '士師記': 7, '士師': 7, '士': 7,
+    '路得記': 8, '路得': 8, '得': 8,
+    '撒母耳記上': 9, '撒上': 9, '撒母耳上': 9,
+    '撒母耳記下': 10, '撒下': 10, '撒母耳下': 10,
+    '列王紀上': 11, '列王記上': 11, '王上': 11,
+    '列王紀下': 12, '列王記下': 12, '王下': 12,
+    '歷代志上': 13, '代上': 13,
+    '歷代志下': 14, '代下': 14,
+    '以斯拉記': 15, '以斯拉': 15, '拉': 15,
+    '尼希米記': 16, '尼希米': 16, '尼': 16,
+    '以斯帖記': 17, '以斯帖': 17, '斯': 17,
+    '約伯記': 18, '約伯': 18, '伯': 18,
+    '詩篇': 19, '詩': 19,
+    '箴言': 20, '箴': 20,
+    '傳道書': 21, '傳道': 21, '傳': 21,
+    '雅歌': 22, '歌': 22,
+    '以賽亞書': 23, '以賽亞': 23, '賽': 23,
+    '耶利米書': 24, '耶利米': 24, '耶': 24,
+    '耶利米哀歌': 25, '哀歌': 25, '哀': 25,
+    '以西結書': 26, '以西結': 26, '結': 26,
+    '但以理書': 27, '但以理': 27, '但': 27,
+    '何西阿書': 28, '何西阿': 28, '何': 28,
+    '約珥書': 29, '約珥': 29, '珥': 29,
+    '阿摩司書': 30, '阿摩司': 30, '摩': 30,
+    '俄巴底亞書': 31, '俄巴底亞': 31, '俄': 31,
+    '約拿書': 32, '約拿': 32, '拿': 32,
+    '彌迦書': 33, '彌迦': 33, '彌': 33,
+    '那鴻書': 34, '那鴻': 34, '鴻': 34,
+    '哈巴谷書': 35, '哈巴谷': 35, '哈': 35,
+    '西番雅書': 36, '西番雅': 36, '番': 36,
+    '哈該書': 37, '哈該': 37, '該': 37,
+    '撒迦利亞書': 38, '撒迦利亞': 38, '亞': 38,
+    '瑪拉基書': 39, '瑪拉基': 39, '瑪': 39,
+    // New Testament
+    '馬太福音': 40, '馬太': 40, '太': 40,
+    '馬可福音': 41, '馬可': 41, '可': 41,
+    '路加福音': 42, '路加': 42, '路': 42,
+    '約翰福音': 43, '約翰': 43, '約': 43,
+    '使徒行傳': 44, '使徒': 44, '徒': 44,
+    '羅馬書': 45, '羅馬': 45, '羅': 45,
+    '哥林多前書': 46, '林前': 46, '哥前': 46,
+    '哥林多後書': 47, '林後': 47, '哥後': 47,
+    '加拉太書': 48, '加拉太': 48, '加': 48,
+    '以弗所書': 49, '以弗所': 49, '弗': 49,
+    '腓立比書': 50, '腓立比': 50, '腓': 50,
+    '歌羅西書': 51, '歌羅西': 51, '西': 51,
+    '帖撒羅尼迦前書': 52, '帖前': 52,
+    '帖撒羅尼迦後書': 53, '帖後': 53,
+    '提摩太前書': 54, '提前': 54,
+    '提摩太後書': 55, '提後': 55,
+    '提多書': 56, '提多': 56, '多': 56,
+    '腓利門書': 57, '腓利門': 57, '門': 57,
+    '希伯來書': 58, '希伯來': 58, '來': 58,
+    '雅各書': 59, '雅各': 59, '雅': 59,
+    '彼得前書': 60, '彼前': 60,
+    '彼得後書': 61, '彼後': 61,
+    '約翰一書': 62, '約一': 62, '約壹': 62,
+    '約翰二書': 63, '約二': 63, '約貳': 63,
+    '約翰三書': 64, '約三': 64, '約叁': 64,
+    '猶大書': 65, '猶大': 65, '猶': 65,
+    '啟示錄': 66, '啟': 66,
+
+    // Simplified Chinese variants — user may type either script
+    '创世记': 1, '创世': 1, '创': 1,
+    '出埃及记': 2, '出埃及': 2,
+    '利未记': 3,
+    '民数记': 4, '民数': 4,
+    '申命记': 5, '申命': 5,
+    '约书亚记': 6, '约书亚': 6,
+    '士师记': 7, '士师': 7,
+    '路得记': 8,
+    '撒母耳记上': 9, '撒母耳上': 9,
+    '撒母耳记下': 10, '撒母耳下': 10,
+    '列王纪上': 11, '列王记上': 11,
+    '列王纪下': 12, '列王记下': 12,
+    '历代志上': 13,
+    '历代志下': 14,
+    '以斯拉记': 15, '以斯拉': 15,
+    '尼希米记': 16, '尼希米': 16,
+    '以斯帖记': 17, '以斯帖': 17,
+    '约伯记': 18, '约伯': 18,
+    '诗篇': 19, '诗': 19,
+    '箴言': 20,
+    '传道书': 21, '传道': 21, '传': 21,
+    '雅歌': 22,
+    '以赛亚书': 23, '以赛亚': 23, '赛': 23,
+    '耶利米书': 24, '耶利米': 24, '耶': 24,
+    '耶利米哀歌': 25, '哀歌': 25, '哀': 25,
+    '以西结书': 26, '以西结': 26, '结': 26,
+    '但以理书': 27, '但以理': 27,
+    '何西阿书': 28, '何西阿': 28,
+    '约珥书': 29, '约珥': 29,
+    '阿摩司书': 30, '阿摩司': 30,
+    '俄巴底亚书': 31, '俄巴底亚': 31,
+    '约拿书': 32, '约拿': 32,
+    '弥迦书': 33, '弥迦': 33, '弥': 33,
+    '那鸿书': 34, '那鸿': 34, '鸿': 34,
+    '哈巴谷书': 35, '哈巴谷': 35,
+    '西番雅书': 36, '西番雅': 36,
+    '哈该书': 37, '哈该': 37,
+    '撒迦利亚书': 38, '撒迦利亚': 38,
+    '玛拉基书': 39, '玛拉基': 39, '玛': 39,
+    '马太福音': 40, '马太': 40, '马': 40,
+    '马可福音': 41, '马可': 41,
+    '路加福音': 42, '路加': 42,
+    '约翰福音': 43, '约翰': 43, '约': 43,
+    '使徒行传': 44, '徒': 44,
+    '罗马书': 45, '罗马': 45, '罗': 45,
+    '哥林多前书': 46,
+    '哥林多后书': 47,
+    '加拉太书': 48, '加拉太': 48,
+    '以弗所书': 49, '以弗所': 49,
+    '腓立比书': 50, '腓立比': 50,
+    '歌罗西书': 51, '歌罗西': 51,
+    '帖撒罗尼迦前书': 52,
+    '帖撒罗尼迦后书': 53,
+    '提摩太前书': 54,
+    '提摩太后书': 55,
+    '提多书': 56, '提多': 56,
+    '腓利门书': 57, '腓利门': 57, '门': 57,
+    '希伯来书': 58, '希伯来': 58, '来': 58,
+    '雅各书': 59, '雅各': 59,
+    '彼得前书': 60,
+    '彼得后书': 61,
+    '约翰一书': 62, '约壹': 62,
+    '约翰二书': 63, '约贰': 63,
+    '约翰三书': 64, '约叁': 64,
+    '犹大书': 65, '犹大': 65, '犹': 65,
+    '启示录': 66, '启': 66
+  };
+
+  // RCUV book codes for the official site (rcuv.hkbs.org.hk)
+  const RCUV_CODES = {
+    1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
+    9:'1SA',10:'2SA',11:'1KI',12:'2KI',13:'1CH',14:'2CH',15:'EZR',16:'NEH',
+    17:'EST',18:'JOB',19:'PSA',20:'PRO',21:'ECC',22:'SNG',23:'ISA',24:'JER',
+    25:'LAM',26:'EZK',27:'DAN',28:'HOS',29:'JOL',30:'AMO',31:'OBA',32:'JON',
+    33:'MIC',34:'NAM',35:'HAB',36:'ZEP',37:'HAG',38:'ZEC',39:'MAL',
+    40:'MAT',41:'MRK',42:'LUK',43:'JHN',44:'ACT',45:'ROM',46:'1CO',47:'2CO',
+    48:'GAL',49:'EPH',50:'PHP',51:'COL',52:'1TH',53:'2TH',54:'1TI',55:'2TI',
+    56:'TIT',57:'PHM',58:'HEB',59:'JAS',60:'1PE',61:'2PE',62:'1JN',63:'2JN',
+    64:'3JN',65:'JUD',66:'REV'
+  };
+
+  // ===== BSF weekly schedule =====
+  // BSF studies run roughly Sept – April (30 weeks) with a Christmas break.
+  // The schedule below covers the announced 2026-2027 study (Romans: From
+  // Guilt to Grace) and is a best-effort projection based on the prior
+  // Romans study (2017-2018), updated as BSF publishes the official one.
+  // The "週經文" field is the homiletics passage for that lesson — the
+  // larger passage the student analyzes through the 5-step method.
+  const BSF_SCHEDULES = [
+    {
+      name: 'Romans: From Guilt to Grace',
+      nameTC: '羅馬書：從罪到恩',
+      // Monday after U.S. Labor Day 2026.
+      startDate: '2026-09-07',
+      // Each entry is the homiletics passage in TC. null = scheduled break (no class).
+      // Order maps to weeks since startDate (week 0 = first week).
+      weeks: [
+        '羅馬書 1:1-17',      // 1: Intro
+        '羅馬書 1:18-32',     // 2
+        '羅馬書 2',           // 3
+        '羅馬書 3:1-20',      // 4
+        '羅馬書 3:21-31',     // 5
+        '羅馬書 4',           // 6
+        '羅馬書 5',           // 7
+        '羅馬書 6',           // 8
+        '羅馬書 7',           // 9
+        '羅馬書 8:1-17',      // 10
+        '羅馬書 8:18-39',     // 11
+        '羅馬書 9',           // 12
+        null,                 // Christmas break
+        null,                 // New Year break
+        '羅馬書 10',          // 13 (calendar week 15)
+        '羅馬書 11',          // 14
+        '羅馬書 12:1-8',      // 15
+        '羅馬書 12:9-21',     // 16
+        '羅馬書 13:1-7',      // 17
+        '羅馬書 13:8-14',     // 18
+        '羅馬書 14:1-12',     // 19
+        '羅馬書 14:13-15:7',  // 20
+        '羅馬書 15:8-21',     // 21
+        '羅馬書 15:22-33',    // 22
+        '羅馬書 16:1-16',     // 23
+        '羅馬書 16:17-27',    // 24
+      ]
+    }
+  ];
+
+  // Look up the homiletics passage scheduled for today (or the most recent
+  // Sunday) in the active BSF study year. Returns either a TC reference
+  // string (e.g. "羅馬書 13:8-14") or null if BSF is on break / between studies.
+  function getBsfPassageForToday() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    for (const study of BSF_SCHEDULES) {
+      const start = new Date(study.startDate);
+      start.setHours(0, 0, 0, 0);
+      const dayMs = 24 * 60 * 60 * 1000;
+      const diffDays = Math.floor((today - start) / dayMs);
+      if (diffDays < 0) continue; // study hasn't started yet
+      const weekIdx = Math.floor(diffDays / 7);
+      if (weekIdx >= study.weeks.length) continue; // past end of study
+      return { passage: study.weeks[weekIdx], study: study, weekIdx: weekIdx };
+    }
+    return null;
+  }
+
+  // applyScriptureMode() — set the Scripture-input mode (manual vs. BSF auto).
+  // When the user selects "本週 BSF", we look up today's lesson passage and
+  // load it into the Scripture field. When manual, no automatic action.
+  function applyScriptureMode(mode, opts) {
+    opts = opts || {};
+    state.scriptureMode = (mode === 'bsf') ? 'bsf' : 'manual';
+    // Update the radio button visual state
+    document.querySelectorAll('#scriptureMode label').forEach(lbl => {
+      lbl.classList.toggle('active', lbl.dataset.mode === state.scriptureMode);
+      const input = lbl.querySelector('input');
+      if (input) input.checked = (lbl.dataset.mode === state.scriptureMode);
+    });
+    if (state.scriptureMode === 'bsf' && !opts.silent) {
+      const result = getBsfPassageForToday();
+      if (!result) {
+        toast(tx('目前在 BSF 暑期休假中（下個學年從 2026 年 9 月 7 日開始：羅馬書）'));
+        return;
+      }
+      if (!result.passage) {
+        toast(tx('本週為 BSF 假期（聖誕／新年休假），下週恢復'));
+        return;
+      }
+      // Load the passage. In SC mode, convert to simplified.
+      let ref = result.passage;
+      if (state.lang === 'SC') ref = toSC(ref);
+      state.scripture = ref;
+      const inputEl = document.getElementById('scripture');
+      if (inputEl) inputEl.value = ref;
+      onScriptureInput();
+      // Auto-fetch the verses
+      try { loadVerses(); } catch (e) {}
+      toast(tx('已載入本週 BSF 經文：') + ref);
+    }
+  }
+
+  // Pre-loaded example: Anna's Romans 13:8-14 work
+  const EXAMPLE = {
+    scripture: '羅馬書 13:8-14',
+    translation: 'CUNP',
+    passage: '',
+    passageEditable: '',
+    content: [
+      { verse: '8',  text: '凡事不虧欠人，彼此相愛' },
+      { verse: '9',  text: '誡命都包在愛人如己之內。' },
+      { verse: '10', text: '愛不加害與人＝完全了律法。' },
+      { verse: '11', text: '該趁早' },
+      { verse: '12', text: '脫去暗昧行為，帶上光明的兵器。' },
+      { verse: '13', text: '為人端正' },
+      { verse: '14', text: '總要披戴主耶穌基督，不放縱私慾。' }
+    ],
+    sections: [
+      { verses: '8-10',  summary: '凡事不虧欠，愛人如己，愛完全律法。' },
+      { verses: '11-14', summary: '趁早脫去暗昧，為人端正，披戴主耶穌，不放縱私慾。' }
+    ],
+    topic: '愛人如己，愛完全律法，趁早脫去暗昧，披戴主耶穌',
+    mainIdea: '耶穌的愛完全律法，教導人披戴祂，愛人如己。',
+    applications: [
+      '你如何回應上帝的教導要愛人如己呢？',
+      '你在什麼地方嘗試用自己的方法來行事為人，以達到上帝的標準嗎？'
+    ]
+  };
+
+  // ========== RENDERING ==========
+  function render() {
+    // Defensive: ensure every content row has id/fromHighlight/highlights (handles example load, imports, legacy state)
+    state.content.forEach(c => {
+      if (!c.id) c.id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      if (c.fromHighlight === undefined) c.fromHighlight = false;
+      if (c.fromHighlight && !c.highlights) {
+        // Legacy fromHighlight row without array — initialize from text
+        c.highlights = c.text ? [c.text] : [];
+      }
+    });
+
+    document.getElementById('scripture').value = state.scripture || '';
+
+    // Translation selector
+    setActiveTranslation(state.translation || 'CUNP');
+
+    // Scripture passage
+    renderPassage();
+
+    // Content rows
+    const cr = document.getElementById('contentRows');
+    cr.innerHTML = '';
+    state.content.forEach((item, idx) => cr.appendChild(makeContentRow(item, idx)));
+    updateContentCounter();
+
+    // Sections
+    const sx = document.getElementById('sections');
+    sx.innerHTML = '';
+    state.sections.forEach((item, idx) => sx.appendChild(makeSection(item, idx)));
+    updateSectionCounter();
+
+    // Topic
+    document.getElementById('topic').value = state.topic || '';
+    updateTopicCounter();
+
+    // Main idea
+    document.getElementById('mainIdea').value = state.mainIdea || '';
+
+    // Applications
+    const ap = document.getElementById('applications');
+    ap.innerHTML = '';
+    state.applications.forEach((item, idx) => ap.appendChild(makeApplication(item, idx)));
+    updateAppCounter();
+
+    renderSummary();
+
+    // Re-apply language to translate any newly-generated DOM
+    applyLang(state.lang || 'TC');
+  }
+
+  function makeContentRow(item, idx) {
+    const total = state.content.length;
+    const row = document.createElement('div');
+    row.className = 'content-row' + (item.fromHighlight ? ' from-highlight' : '');
+    const verseTitle = item.fromHighlight ? '由經文標記自動填入（可手動修改）' : '輸入經節';
+    row.innerHTML = `
+      <input class="verse-input" type="text" placeholder="節" title="${verseTitle}" value="${escapeAttr(item.verse || '')}" data-idx="${idx}" data-field="verse">
+      <textarea class="content-input" rows="1" placeholder="這段經文說什麼？列出經文中主題、事件或經文細節，不必是完整句子⋯" data-idx="${idx}" data-field="text">${escapeHtml(item.text || '')}</textarea>
+      <div class="row-move">
+        <button type="button" title="上移" onclick="moveContent(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+        <button type="button" title="下移" onclick="moveContent(${idx}, 1)" ${idx === total - 1 ? 'disabled' : ''}>▼</button>
+      </div>
+      <button class="row-remove" title="刪除此行" onclick="removeContent(${idx})">×</button>
+    `;
+    row.querySelectorAll('input.verse-input, textarea.content-input').forEach(el => {
+      el.addEventListener('input', (e) => {
+        const i = +e.target.dataset.idx;
+        const f = e.target.dataset.field;
+        state.content[i][f] = e.target.value;
+        if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
+        // If user edits a highlight-derived row's text, re-render passage so highlight stays in sync
+        if (state.content[i].fromHighlight) renderPassage();
+        save();
+      });
+      if (el.tagName === 'TEXTAREA') {
+        // Auto-resize on render
+        setTimeout(() => autoResize(el), 0);
+      }
+    });
+    return row;
+  }
+
+  // Reorder a content row up (-1) or down (+1)
+  function moveContent(idx, direction) {
+    const newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= state.content.length) return;
+    const tmp = state.content[idx];
+    state.content[idx] = state.content[newIdx];
+    state.content[newIdx] = tmp;
+    render();
+    save();
+  }
+
+  function makeSection(item, idx) {
+    const block = document.createElement('div');
+    block.className = 'section-block';
+    block.innerHTML = `
+      <div class="section-num">${toRoman(idx + 1)}</div>
+      <div class="section-fields">
+        <input class="section-verses" type="text" placeholder="經節" value="${escapeAttr(item.verses || '')}" data-idx="${idx}" data-field="verses">
+        <textarea class="section-summary" rows="1" placeholder="此分段的摘要句…" data-idx="${idx}" data-field="summary">${escapeHtml(item.summary || '')}</textarea>
+        <button class="row-remove" title="刪除此段" onclick="removeSection(${idx})">×</button>
+      </div>
+    `;
+    block.querySelectorAll('input, textarea').forEach(el => {
+      el.addEventListener('input', (e) => {
+        const i = +e.target.dataset.idx;
+        const f = e.target.dataset.field;
+        state.sections[i][f] = e.target.value;
+        if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
+        save();
+      });
+      if (el.tagName === 'TEXTAREA') setTimeout(() => autoResize(el), 0);
+    });
+    return block;
+  }
+
+  function makeApplication(text, idx) {
+    const block = document.createElement('div');
+    block.className = 'app-block';
+    block.innerHTML = `
+      <div class="app-num">${idx + 1}</div>
+      <textarea class="app-input" rows="2" placeholder="向聽眾提出的應用問題…" data-idx="${idx}">${escapeHtml(text || '')}</textarea>
+      <button class="row-remove" title="刪除此題" onclick="removeApplication(${idx})">×</button>
+    `;
+    const ta = block.querySelector('textarea');
+    ta.addEventListener('input', (e) => {
+      state.applications[+e.target.dataset.idx] = e.target.value;
+      autoResize(e.target);
+      save();
+    });
+    setTimeout(() => autoResize(ta), 0);
+    return block;
+  }
+
+  // ========== SCRIPTURE TEXT (passage fetching & display) ==========
+  function onScriptureInput() {
+    state.scripture = document.getElementById('scripture').value;
+    save();
+  }
+
+  // Translation selector handling
+  function setActiveTranslation(trans) {
+    state.translation = trans;
+    document.querySelectorAll('#stTranslation label').forEach(lbl => {
+      lbl.classList.toggle('active', lbl.dataset.trans === trans);
+      const r = lbl.querySelector('input');
+      if (r) r.checked = (lbl.dataset.trans === trans);
+    });
+    document.getElementById('rcuvNotice').style.display = (trans === 'RCUV') ? 'block' : 'none';
+    if (trans === 'RCUV') {
+      // For RCUV, ensure edit textarea is visible by default
+      document.getElementById('stEdit').style.display = 'block';
+    }
+    updateRcuvLink();
+    updateAttribution();
+  }
+
+  document.addEventListener('change', (e) => {
+    if (e.target.matches('#stTranslation input[type="radio"]')) {
+      setActiveTranslation(e.target.value);
+      save();
+    }
+    if (e.target.matches('#langSwitcher input[type="radio"]')) {
+      const newLang = e.target.value;
+      applyLang(newLang);
+      // Re-render so dynamic strings get translated
+      render();
+      save();
+    }
+    if (e.target.matches('#layoutSwitcher input[type="radio"]')) {
+      applyLayout(e.target.value);
+      save();
+    }
+    if (e.target.matches('#scriptureMode input[type="radio"]')) {
+      applyScriptureMode(e.target.value);
+      save();
+    }
+  });
+
+  // applyLayout() — toggles between 1-column and 2-column layouts.
+  // 1-column: everything stacks vertically (default).
+  // 2-column: the Passage block becomes a sticky left rail while the user
+  // works through Steps I-V on the right. CSS does the heavy lifting via
+  // the .layout-2col class on <body>.
+  function applyLayout(layout) {
+    state.layout = (layout === '2col') ? '2col' : '1col';
+    document.body.classList.toggle('layout-2col', state.layout === '2col');
+    // Update the radio button visual state
+    document.querySelectorAll('#layoutSwitcher label').forEach(lbl => {
+      lbl.classList.toggle('active', lbl.dataset.layout === state.layout);
+      const input = lbl.querySelector('input');
+      if (input) input.checked = (lbl.dataset.layout === state.layout);
+    });
+  }
+
+  // toggleHint() — flip the collapsed state of one 方法 hint box.
+  // The collapsed state for each step is persisted in state.hintsCollapsed
+  // (an array of 5 booleans, one per step) and reapplied on load.
+  function toggleHint(btn) {
+    const hint = btn.closest('.hint');
+    if (!hint) return;
+    const allHints = Array.from(document.querySelectorAll('.hint'));
+    const idx = allHints.indexOf(hint);
+    if (idx < 0) return;
+    if (!Array.isArray(state.hintsCollapsed)) {
+      state.hintsCollapsed = [false, false, false, false, false];
+    }
+    state.hintsCollapsed[idx] = !state.hintsCollapsed[idx];
+    hint.classList.toggle('collapsed', state.hintsCollapsed[idx]);
+    btn.setAttribute('aria-expanded', state.hintsCollapsed[idx] ? 'false' : 'true');
+    save();
+  }
+
+  // applyHintCollapse() — sync the .collapsed class on each .hint element
+  // with state.hintsCollapsed. Called on load and after import.
+  function applyHintCollapse() {
+    if (!Array.isArray(state.hintsCollapsed)) {
+      state.hintsCollapsed = [false, false, false, false, false];
+    }
+    document.querySelectorAll('.hint').forEach((h, i) => {
+      const collapsed = !!state.hintsCollapsed[i];
+      h.classList.toggle('collapsed', collapsed);
+      const btn = h.querySelector('.hint-toggle');
+      if (btn) btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    });
+  }
+
+  // ========== MOBILE RESIZER (split-pane in mobile + 2-col mode) ==========
+  // Allows the user to drag a horizontal bar to resize the pinned Scripture
+  // passage at the top vs. the scrolling content below (Steps I–V + 綜覽).
+  // Only active in mobile + 2-col mode (CSS handles the visibility).
+  function initMobileResizer() {
+    const resizer = document.getElementById('mobileResizer');
+    if (!resizer) return;
+
+    let dragging = false;
+    let startY = 0;
+    let startHeight = 0;
+
+    function clampHeight(h) {
+      // Keep both panels usable: at least 120px passage, and at least 200px below.
+      return Math.max(120, Math.min(window.innerHeight - 200, h));
+    }
+
+    function applyHeight(h) {
+      document.documentElement.style.setProperty('--mobile-passage-height', h + 'px');
+    }
+
+    resizer.addEventListener('pointerdown', (e) => {
+      // Only act in mobile + 2-col mode (when resizer is actually visible)
+      if (getComputedStyle(resizer).display === 'none') return;
+      dragging = true;
+      startY = e.clientY;
+      const passageEl = document.querySelector('.scripture-text');
+      startHeight = passageEl ? passageEl.getBoundingClientRect().height : window.innerHeight * 0.4;
+      try { resizer.setPointerCapture(e.pointerId); } catch (err) {}
+      e.preventDefault();
+    });
+
+    resizer.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dy = e.clientY - startY;
+      applyHeight(clampHeight(startHeight + dy));
+    });
+
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      try { resizer.releasePointerCapture(e.pointerId); } catch (err) {}
+      // Persist the height so it survives reloads.
+      const passageEl = document.querySelector('.scripture-text');
+      if (passageEl) {
+        state.mobilePassageHeight = Math.round(passageEl.getBoundingClientRect().height) + 'px';
+        save();
+      }
+    }
+    resizer.addEventListener('pointerup', endDrag);
+    resizer.addEventListener('pointercancel', endDrag);
+
+    // Apply persisted height on init (if any)
+    if (state.mobilePassageHeight) {
+      document.documentElement.style.setProperty('--mobile-passage-height', state.mobilePassageHeight);
+    }
+  }
+
+  // Update RCUV official site link based on current scripture and language.
+  // TC mode → rcuv.hkbs.org.hk (Hong Kong Bible Society's official site, Traditional Chinese)
+  // SC mode → bible.com/bible/140/<BOOK>.<CHAPTER>.RCUVSS (RCUVSS = the 简体 edition, also published by HKBS)
+  function updateRcuvLink() {
+    const link = document.getElementById('rcuvLink');
+    if (!link) return;
+    const ref = parseRef(state.scripture || '');
+    const code = ref ? RCUV_CODES[ref.bookId] : null;
+    const chapter = ref ? ref.chapter : 1;
+    if (state.lang === 'SC') {
+      if (code) {
+        link.href = `https://www.bible.com/bible/140/${code}.${chapter}.RCUVSS`;
+      } else {
+        link.href = 'https://www.bible.com/versions/140-rcuvss';
+      }
+    } else {
+      if (code) {
+        link.href = `https://rcuv.hkbs.org.hk/RCUV_2/${code}/${chapter}/`;
+      } else {
+        link.href = 'https://rcuv.hkbs.org.hk/';
+      }
+    }
+  }
+
+  // Reference parser: "羅馬書 13:8-14" → single chapter range
+  //                    "羅馬書 13:8-14:5" → cross-chapter range
+  //                    "詩篇 23" → whole chapter
+  //                    "創世記 1:1" → single verse
+  function parseRef(text) {
+    if (!text) return null;
+    // Normalize whitespace, full-width punctuation, dashes
+    let t = text.trim()
+      .replace(/\s+/g, '')
+      .replace(/[：﹕]/g, ':')
+      .replace(/[—–－~～]/g, '-')
+      .replace(/[，、]/g, ',')
+      .replace(/章/g, ':')
+      .replace(/[節节]/g, '');
+    // Match: bookname + chapter (+:verseStart) (+ -[chapterEnd:]verseEnd)
+    const m = t.match(/^(\D+?)(\d+)(?::(\d+))?(?:-(?:(\d+):)?(\d+))?$/);
+    if (!m) return null;
+    const [_, rawBook, ch, vs, chEnd, ve] = m;
+    const bookId = lookupBook(rawBook);
+    if (!bookId) return null;
+    const chapter = parseInt(ch, 10);
+    return {
+      bookId,
+      bookName: rawBook,
+      chapter,
+      verseStart: vs ? parseInt(vs, 10) : null,
+      chapterEnd: chEnd ? parseInt(chEnd, 10) : chapter,
+      verseEnd: ve ? parseInt(ve, 10) : (vs ? parseInt(vs, 10) : null)
+    };
+  }
+
+  function lookupBook(name) {
+    if (!name) return null;
+    if (BOOK_MAP[name] !== undefined) return BOOK_MAP[name];
+    // Try without trailing 書/福音/記
+    const stripped = name.replace(/(書|福音|記)$/, '');
+    if (BOOK_MAP[stripped] !== undefined) return BOOK_MAP[stripped];
+    // Try with 書 added
+    if (BOOK_MAP[name + '書'] !== undefined) return BOOK_MAP[name + '書'];
+    return null;
+  }
+
+  // Strip HTML tags from verse text returned by Bolls API
+  function cleanVerseText(html) {
+    if (!html) return '';
+    // Replace common HTML tags with spaces, then strip remaining
+    return html
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<\/p>/gi, ' ')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // Main "讀取經文" button handler
+  async function loadVerses() {
+    const ref = parseRef(state.scripture);
+    const passageEl = document.getElementById('stPassage');
+
+    if (!ref) {
+      passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('無法辨識經文出處。請確認格式如「羅馬書 13:8-14」或「羅馬書 13:8-14:5」（跨章節）或「詩篇 23」'))}</span>`;
+      return;
+    }
+
+    if (state.translation === 'RCUV') {
+      // Open RCUV site and prompt for paste
+      updateRcuvLink();
+      const link = document.getElementById('rcuvLink');
+      window.open(link.href, '_blank', 'noopener');
+      document.getElementById('stEdit').style.display = 'block';
+      document.getElementById('stEdit').focus();
+      passageEl.innerHTML = `<span class="st-empty">${escapeHtml(tx('請從 RCUV 官網複製經文後，貼到下方文字框中'))}</span>`;
+      toast(tx('已開啟 RCUV 官網'));
+      return;
+    }
+
+    passageEl.innerHTML = `<span class="st-loading">${escapeHtml(tx('讀取中…'))}</span>`;
+
+    try {
+      const startCh = ref.chapter;
+      const endCh = ref.chapterEnd || ref.chapter;
+      const isCrossChapter = startCh !== endCh;
+      let allVerses = [];
+
+      // Bolls.life reliably hosts the Traditional-Chinese slugs (CUV, CUNP).
+      // Their Simplified slugs are inconsistent / sometimes missing, so we always
+      // fetch the TC slug and convert the verse text client-side via toSC()
+      // when the user is in Simplified mode. This guarantees the fetch works
+      // and that the rendered passage matches the rest of the SC interface.
+      const bollsSlug = (state.translation === 'CUVS') ? 'CUV'
+                      : (state.translation === 'CUNPSS') ? 'CUNP'
+                      : state.translation;
+
+      // Fetch each chapter in range
+      for (let ch = startCh; ch <= endCh; ch++) {
+        const url = `https://bolls.life/get-text/${bollsSlug}/${ref.bookId}/${ch}/`;
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('API ' + r.status);
+        const verses = await r.json();
+
+        // Filter:
+        //   first chapter:  from verseStart onwards
+        //   last chapter:   up to verseEnd
+        //   middle chapters: all verses
+        const filtered = verses.filter(v => {
+          if (ch === startCh && ref.verseStart !== null && v.verse < ref.verseStart) return false;
+          if (ch === endCh && ref.verseEnd !== null && v.verse > ref.verseEnd) return false;
+          return true;
+        }).map(v => ({ ...v, _chapter: ch }));
+
+        allVerses.push(...filtered);
+      }
+
+      if (!allVerses.length) {
+        passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('沒有找到此經節範圍'))}</span>`;
+        return;
+      }
+
+      // Build editable text version
+      // Single chapter: "8 text\n9 text\n..."
+      // Cross-chapter:  "13:8 text\n13:9 text\n14:1 text\n..."
+      // In SC mode, convert each verse text to simplified characters
+      // (since we always fetched from a Traditional-Chinese slug).
+      const plainText = allVerses.map(v => {
+        let txt = cleanVerseText(v.text).replace(/^\s*\d+\s*[\.．、]?\s*/, '');
+        if (state.lang === 'SC') txt = toSC(txt);
+        const verseLabel = isCrossChapter ? `${v._chapter}:${v.verse}` : `${v.verse}`;
+        return `${verseLabel} ${txt}`;
+      }).join('\n');
+      state.passageEditable = plainText;
+      state.passage = plainText;
+
+      // Render formatted display
+      renderPassage();
+      // Sync into textarea (in case it's open)
+      document.getElementById('stEdit').value = plainText;
+      updateAttribution();
+      save();
+      toast(tx('已讀取經文'));
+    } catch (err) {
+      console.error(err);
+      passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('讀取失敗（'))}${escapeHtml(err.message || 'network error')}${escapeHtml(tx('）。請檢查網路連線或改用「編輯」手動貼入經文。'))}</span>`;
+    }
+  }
+
+  // Render the passage display from state.passageEditable (which is plain text)
+  function renderPassage() {
+    const el = document.getElementById('stPassage');
+    const text = state.passageEditable || state.passage || '';
+    if (!text) {
+      el.innerHTML = `<span class="st-empty">${escapeHtml(tx('在上方欄位輸入經文出處（如「羅馬書 13:8-14」）後，點擊「讀取經文」'))}</span>`;
+      return;
+    }
+    // Each line is one verse. Leading "N" or "C:V" → verse label; rest is content.
+    const lines = text.split(/\n+/).filter(l => l.trim());
+    el.innerHTML = lines.map(line => {
+      const m = line.match(/^\s*(\d+(?::\d+)?)\s*[\.．、]?\s*(.+)$/);
+      if (m) {
+        const verseLabel = m[1];
+        const verseText = m[2];
+        const inner = applyHighlights(verseText, verseLabel);
+        return `<span class="passage-verse" data-verse="${escapeAttr(verseLabel)}"><span class="verse-num">${escapeHtml(verseLabel)}</span>${inner}</span>`;
+      }
+      return escapeHtml(line);
+    }).join(' ');
+  }
+
+  // Apply highlights to verse text — finds content rows (fromHighlight=true)
+  // matching this verse, and wraps each highlight phrase in the row's `highlights` array.
+  function applyHighlights(verseText, verseLabel) {
+    const rows = state.content.filter(c =>
+      c.fromHighlight && String(c.verse) === String(verseLabel)
+    );
+    if (!rows.length) return escapeHtml(verseText);
+
+    // Build a flat list of {phrase, contentId, hlIdx} from all matching rows
+    const phrases = [];
+    for (const row of rows) {
+      const hls = (row.highlights && row.highlights.length)
+        ? row.highlights
+        : (row.text ? [row.text] : []); // backward compat: treat single text as one highlight
+      hls.forEach((phrase, hlIdx) => {
+        if (phrase) phrases.push({ phrase, contentId: row.id, hlIdx });
+      });
+    }
+    if (!phrases.length) return escapeHtml(verseText);
+
+    // Find each phrase's first non-overlapping occurrence in verseText, in order
+    const ranges = [];
+    let searchOffset = 0;
+    const remaining = [...phrases];
+    while (remaining.length) {
+      // Find phrase with earliest occurrence at or after searchOffset
+      let bestI = -1, bestPos = Infinity;
+      for (let i = 0; i < remaining.length; i++) {
+        const pos = verseText.indexOf(remaining[i].phrase, searchOffset);
+        if (pos !== -1 && pos < bestPos) {
+          bestPos = pos;
+          bestI = i;
+        }
+      }
+      if (bestI === -1) break;
+      const p = remaining[bestI];
+      ranges.push({ start: bestPos, end: bestPos + p.phrase.length, contentId: p.contentId, hlIdx: p.hlIdx });
+      searchOffset = bestPos + p.phrase.length;
+      remaining.splice(bestI, 1);
+    }
+    if (!ranges.length) return escapeHtml(verseText);
+    ranges.sort((a, b) => a.start - b.start);
+
+    // Stitch together with marks
+    let out = '';
+    let cursor = 0;
+    for (const r of ranges) {
+      out += escapeHtml(verseText.slice(cursor, r.start));
+      out += `<mark class="hl" data-content-id="${escapeAttr(r.contentId)}" data-hl-idx="${r.hlIdx}">${escapeHtml(verseText.slice(r.start, r.end))}</mark>`;
+      cursor = r.end;
+    }
+    out += escapeHtml(verseText.slice(cursor));
+    return out;
+  }
+
+  // Toggle edit mode for the passage
+  function toggleEdit() {
+    const ta = document.getElementById('stEdit');
+    if (ta.style.display === 'none') {
+      ta.style.display = 'block';
+      ta.value = state.passageEditable || '';
+      ta.focus();
+    } else {
+      ta.style.display = 'none';
+    }
+  }
+
+  function onEditInput() {
+    const ta = document.getElementById('stEdit');
+    state.passageEditable = ta.value;
+    state.passage = ta.value;
+    renderPassage();
+    updateAttribution();
+    save();
+  }
+
+  // Attribution line at bottom
+  function updateAttribution() {
+    const el = document.getElementById('stAttribution');
+    if (!el) return;
+    if (!state.passageEditable) { el.textContent = ''; return; }
+    if (state.translation === 'RCUV') {
+      el.textContent = tx('經文引自《和合本2010（和合本修訂版）》，版權屬香港聖經公會所有，蒙允准使用。');
+    } else if (state.translation === 'CUNP' || state.translation === 'CUNPSS') {
+      el.textContent = tx('經文引自《新標點和合本》（公有領域）·  via bolls.life');
+    } else {
+      el.textContent = tx('經文引自《和合本》1919（公有領域）·  via bolls.life');
+    }
+  }
+
+  // ========== HIGHLIGHT FROM SELECTION ==========
+  let _popupContext = null; // { mode: 'add'|'remove', text, verse, contentId }
+
+  function setupHighlightHandlers() {
+    const passage = document.getElementById('stPassage');
+    const popup = document.getElementById('hlPopup');
+
+    // On selection in passage, show "+ 加入內容列項"
+    passage.addEventListener('mouseup', handleSelection);
+    passage.addEventListener('touchend', () => setTimeout(handleSelection, 50));
+
+    // Click on existing highlight → show "移除" option
+    passage.addEventListener('click', (e) => {
+      const mark = e.target.closest('mark.hl');
+      if (mark) {
+        e.preventDefault();
+        e.stopPropagation();
+        showRemovePopup(mark);
+        return;
+      }
+    });
+
+    // Popup click → execute action
+    popup.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // don't blur the selection
+    });
+    popup.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!_popupContext) return;
+      if (_popupContext.mode === 'add') {
+        addHighlightToContent(_popupContext.text, _popupContext.verse);
+      } else if (_popupContext.mode === 'remove') {
+        removeHighlight(_popupContext.contentId, _popupContext.hlIdx);
+      }
+      hidePopup();
+      window.getSelection().removeAllRanges();
+    });
+
+    // Hide popup on outside click / scroll
+    document.addEventListener('mousedown', (e) => {
+      if (e.target.closest('#hlPopup')) return;
+      if (e.target.closest('#stPassage')) return;
+      hidePopup();
+    });
+    window.addEventListener('scroll', hidePopup, true);
+  }
+
+  function handleSelection() {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) {
+      hidePopup();
+      return;
+    }
+    const text = sel.toString().trim();
+    if (!text || text.length < 1) {
+      hidePopup();
+      return;
+    }
+    // Make sure selection is inside passage
+    const range = sel.getRangeAt(0);
+    const passage = document.getElementById('stPassage');
+    if (!passage.contains(range.commonAncestorContainer)) {
+      hidePopup();
+      return;
+    }
+    // Find the verse container
+    let node = range.startContainer;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    const verseEl = node.closest('.passage-verse');
+    if (!verseEl) {
+      hidePopup();
+      return;
+    }
+    const verse = verseEl.dataset.verse;
+    showAddPopup(text, verse, range);
+  }
+
+  function showAddPopup(text, verse, range) {
+    const popup = document.getElementById('hlPopup');
+    popup.textContent = '+ 加入內容列項';
+    popup.classList.remove('remove');
+    _popupContext = { mode: 'add', text, verse };
+    positionPopup(range.getBoundingClientRect());
+  }
+
+  function showRemovePopup(markEl) {
+    const popup = document.getElementById('hlPopup');
+    popup.textContent = '× 移除標記';
+    popup.classList.add('remove');
+    _popupContext = {
+      mode: 'remove',
+      contentId: markEl.dataset.contentId,
+      hlIdx: markEl.dataset.hlIdx !== undefined ? parseInt(markEl.dataset.hlIdx, 10) : undefined
+    };
+    positionPopup(markEl.getBoundingClientRect());
+  }
+
+  function positionPopup(rect) {
+    const popup = document.getElementById('hlPopup');
+    popup.style.display = 'block';
+    // Position below the selection by default
+    const popupRect = popup.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 8;
+    let left = rect.left + window.scrollX;
+    // Don't go off right edge
+    const maxLeft = window.scrollX + window.innerWidth - popupRect.width - 12;
+    if (left > maxLeft) left = maxLeft;
+    if (left < window.scrollX + 8) left = window.scrollX + 8;
+    popup.style.top = top + 'px';
+    popup.style.left = left + 'px';
+  }
+
+  function hidePopup() {
+    document.getElementById('hlPopup').style.display = 'none';
+    _popupContext = null;
+  }
+
+  // Add a highlight as a new content row, OR merge into existing same-verse row
+  function addHighlightToContent(text, verse) {
+    const verseStr = String(verse);
+    // Look for an existing fromHighlight row with the same verse
+    const existing = state.content.find(c =>
+      c.fromHighlight && String(c.verse) === verseStr
+    );
+
+    if (existing) {
+      // Merge: append phrase to highlights array
+      if (!existing.highlights) existing.highlights = existing.text ? [existing.text] : [];
+      // Avoid duplicates of the exact same phrase
+      if (!existing.highlights.includes(text)) {
+        const wasInSync = existing.text === existing.highlights.join('，');
+        existing.highlights.push(text);
+        if (wasInSync) {
+          // Keep text in sync with highlights array
+          existing.text = existing.highlights.join('，');
+        } else {
+          // User has manually edited text; append the new phrase
+          existing.text = (existing.text ? existing.text + '，' : '') + text;
+        }
+      }
+    } else {
+      // Create new row
+      const id = 'h_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      state.content.push({
+        id,
+        verse: verseStr,
+        text: text,
+        highlights: [text],
+        fromHighlight: true
+      });
+    }
+    render();
+    save();
+    toast(tx('已加入內容列項'));
+  }
+
+  // Remove a highlight (called from passage when user clicks an existing highlight)
+  function removeHighlight(contentId, hlIdx) {
+    const idx = state.content.findIndex(c => c.id === contentId);
+    if (idx === -1) return;
+    const row = state.content[idx];
+
+    if (!row.highlights || row.highlights.length === 0 || hlIdx === undefined) {
+      // No highlights array (legacy) — remove the whole row
+      state.content.splice(idx, 1);
+    } else {
+      const wasInSync = row.text === row.highlights.join('，');
+      row.highlights.splice(hlIdx, 1);
+
+      if (row.highlights.length === 0) {
+        // No more highlights left
+        if (wasInSync || !row.text.trim()) {
+          // Text was auto-synced or empty — remove the whole row
+          state.content.splice(idx, 1);
+        } else {
+          // User has manual text — preserve it but disconnect from highlight system
+          row.fromHighlight = false;
+          delete row.highlights;
+        }
+      } else if (wasInSync) {
+        // Keep text in sync with remaining highlights
+        row.text = row.highlights.join('，');
+      }
+      // else: user has edited text manually; don't touch it
+    }
+    render();
+    save();
+    toast(tx('已移除標記'));
+  }
+
+  // ========== AUTO RESIZE TEXTAREAS ==========
+  function autoResize(ta) {
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight + 2) + 'px';
+  }
+
+  // ========== CRUD ==========
+  function addContentRow() {
+    const id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    state.content.push({ id, verse: '', text: '', fromHighlight: false });
+    render();
+    save();
+    // Focus the new verse input
+    setTimeout(() => {
+      const inputs = document.querySelectorAll('#contentRows .verse-input');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    }, 0);
+  }
+  function removeContent(idx) {
+    state.content.splice(idx, 1);
+    render();
+    save();
+  }
+
+  function addSection() {
+    if (state.sections.length >= 6) return;
+    state.sections.push({ verses: '', summary: '' });
+    render();
+    save();
+  }
+  function removeSection(idx) {
+    state.sections.splice(idx, 1);
+    render();
+    save();
+  }
+
+  function addApplication() {
+    if (state.applications.length >= 8) return;
+    state.applications.push('');
+    render();
+    save();
+  }
+  function removeApplication(idx) {
+    state.applications.splice(idx, 1);
+    render();
+    save();
+  }
+
+  // ========== COUNTERS ==========
+  function updateContentCounter() {
+    const n = state.content.length;
+    const el = document.getElementById('contentCounter');
+    el.textContent = tx(`${n} 項 · 建議 10–20`);
+    el.className = 'row-counter ' + (n >= 10 && n <= 20 ? 'ok' : (n > 0 ? 'warn' : ''));
+  }
+
+  function updateSectionCounter() {
+    const n = state.sections.length;
+    const el = document.getElementById('sectionCounter');
+    el.textContent = tx(`${n} 段 · 建議 2–4`);
+    el.className = 'row-counter ' + (n >= 2 && n <= 4 ? 'ok' : (n > 0 ? 'warn' : ''));
+  }
+
+  function updateAppCounter() {
+    const n = state.applications.length;
+    const el = document.getElementById('appCounter');
+    const target = state.sections.length || 4;
+    el.textContent = tx(`${n} 題 · 每段一題（建議 ${target}）`);
+    el.className = 'row-counter ' + (n === target && n > 0 ? 'ok' : '');
+  }
+
+  function updateTopicCounter() {
+    const v = document.getElementById('topic').value;
+    state.topic = v;
+    // Count Chinese characters: any non-whitespace character. Strip whitespace and punctuation.
+    const cleaned = v.replace(/\s+/g, '').replace(/[，。、；：！？「」『』（）()]/g, '');
+    const n = [...cleaned].length;
+    const el = document.getElementById('topicCounter');
+    el.textContent = tx(`${n} 字 · 目標 10–25`);
+    el.className = 'char-counter ' + (n >= 10 && n <= 25 ? 'ok' : (n > 0 ? 'warn' : ''));
+  }
+
+  // ========== SUMMARY ==========
+  function renderSummary() {
+    const empty = '<span class="empty">尚未填寫</span>';
+
+    document.getElementById('sumScripture').innerHTML =
+      state.scripture ? escapeHtml(state.scripture) : empty;
+
+    document.getElementById('sumSections').innerHTML = state.sections.length
+      ? '<ul>' + state.sections.map(s =>
+          `<li><strong>${escapeHtml(s.verses || '?')}</strong> &nbsp; ${escapeHtml(s.summary || '')}</li>`
+        ).join('') + '</ul>'
+      : empty;
+
+    document.getElementById('sumTopic').innerHTML =
+      state.topic ? escapeHtml(state.topic) : empty;
+
+    document.getElementById('sumMainIdea').innerHTML =
+      state.mainIdea ? '使觀眾能學到 ' + escapeHtml(state.mainIdea) : empty;
+
+    document.getElementById('sumApps').innerHTML = state.applications.length
+      ? '<ul>' + state.applications.map(a =>
+          `<li>${escapeHtml(a || '')}</li>`
+        ).join('') + '</ul>'
+      : empty;
+  }
+
+  // ========== SAVE / LOAD ==========
+  let saveTimer = null;
+  function save() {
+    state.scripture = document.getElementById('scripture').value;
+    state.topic = document.getElementById('topic').value;
+    state.mainIdea = document.getElementById('mainIdea').value;
+    renderSummary();
+    updateContentCounter();
+    updateSectionCounter();
+    updateAppCounter();
+    updateRcuvLink();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      await storageSet(STORAGE_KEY, JSON.stringify(state));
+    }, 250);
+  }
+
+  async function load() {
+    const raw = await storageGet(STORAGE_KEY);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        state = Object.assign(state, parsed);
+      } catch (e) {}
+    }
+    if (!state.content.length && !state.scripture) {
+      // First-time load: show example
+      state = JSON.parse(JSON.stringify(EXAMPLE));
+    }
+    // Backward compat: ensure every content row has an id
+    state.content.forEach(c => {
+      if (!c.id) c.id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      if (c.fromHighlight === undefined) c.fromHighlight = false;
+    });
+    // Default language to TC if not set
+    if (!state.lang) state.lang = 'TC';
+    // Default layout to 1-column if not set
+    if (!state.layout) state.layout = '1col';
+    // Default hints all expanded
+    if (!Array.isArray(state.hintsCollapsed)) state.hintsCollapsed = [false, false, false, false, false];
+    // Default scripture mode to manual
+    if (!state.scriptureMode) state.scriptureMode = 'manual';
+    render();
+    applyLang(state.lang);
+    applyLayout(state.layout);
+    applyHintCollapse();
+    initMobileResizer();
+    // If user previously enabled BSF auto-load, attempt it on open
+    // (silent visual update + auto-load if BSF mode is active).
+    if (state.scriptureMode === 'bsf') {
+      // Apply the visual state silently first
+      applyScriptureMode('bsf', { silent: true });
+      // Only auto-load if scripture is empty (don't clobber existing work)
+      if (!state.scripture || state.scripture.trim() === '') {
+        applyScriptureMode('bsf');
+      }
+    } else {
+      applyScriptureMode('manual', { silent: true });
+    }
+  }
+
+  function loadExample() {
+    if (!confirm(tx('將以「羅馬書 13:8-14」範例覆蓋目前內容，確定？'))) return;
+    // Preserve the user's current language preference — don't reset to TC.
+    const currentLang = state.lang || 'TC';
+    const currentLayout = state.layout || '1col';
+    const currentHints = state.hintsCollapsed || [false, false, false, false, false];
+    state = JSON.parse(JSON.stringify(EXAMPLE));
+    state.lang = currentLang;
+    state.layout = currentLayout;
+    state.hintsCollapsed = currentHints;
+    // Loading the example overrides BSF auto-mode; revert to manual so the
+    // example's scripture isn't immediately overwritten by today's BSF passage.
+    state.scriptureMode = 'manual';
+    // The EXAMPLE strings are stored in Traditional Chinese (canonical form).
+    // If the user is in Simplified mode, convert all user-facing content fields
+    // so the loaded example matches the rest of the SC interface.
+    if (currentLang === 'SC') {
+      state.scripture = toSC(state.scripture);
+      state.content = state.content.map(c => Object.assign({}, c, {
+        text: toSC(c.text || ''),
+        highlights: c.highlights ? c.highlights.map(toSC) : c.highlights
+      }));
+      state.sections = state.sections.map(s => Object.assign({}, s, {
+        summary: toSC(s.summary || '')
+      }));
+      state.topic = toSC(state.topic || '');
+      state.mainIdea = toSC(state.mainIdea || '');
+      state.applications = state.applications.map(a => toSC(a || ''));
+    }
+    render();
+    applyScriptureMode('manual', { silent: true });
+    save();
+    toast(tx('已載入範例'));
+  }
+
+  function clearAll() {
+    if (!confirm(tx('清除全部內容？此動作無法復原。'))) return;
+    state = {
+      scripture: '',
+      translation: state.translation || 'CUNP',
+      lang: state.lang || 'TC',
+      layout: state.layout || '1col',
+      scriptureMode: state.scriptureMode || 'manual',
+      hintsCollapsed: state.hintsCollapsed || [false, false, false, false, false],
+      passage: '',
+      passageEditable: '',
+      content: [],
+      sections: [],
+      topic: '',
+      mainIdea: '',
+      applications: []
+    };
+    // Start with one empty row of each
+    state.content.push({ verse: '', text: '' });
+    state.sections.push({ verses: '', summary: '' });
+    state.applications.push('');
+    document.getElementById('stEdit').value = '';
+    document.getElementById('stEdit').style.display = 'none';
+    render();
+    save();
+    toast(tx('已清除'));
+  }
+
+  // ========== EXPORT / IMPORT ==========
+  function exportJSON() {
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ref = (state.scripture || 'homiletics').replace(/\s+/g, '_').replace(/[:：]/g, '-');
+    a.href = url;
+    a.download = `經文分析_${ref}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast(tx('已儲存'));
+  }
+
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        state = Object.assign({
+          scripture: '', translation: 'CUNP', passage: '', passageEditable: '',
+          content: [], sections: [], topic: '', mainIdea: '', applications: [],
+          lang: 'TC', layout: '1col', scriptureMode: 'manual',
+          hintsCollapsed: [false, false, false, false, false]
+        }, parsed);
+        render();
+        applyLang(state.lang || 'TC');
+        applyLayout(state.layout || '1col');
+        applyHintCollapse();
+        applyScriptureMode(state.scriptureMode || 'manual', { silent: true });
+        save();
+        toast(tx('已開啟'));
+      } catch (err) {
+        alert(tx('無法讀取此檔案：') + err.message);
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  // ========== HELPERS ==========
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+
+  function toRoman(n) {
+    const map = ['I','II','III','IV','V','VI','VII','VIII'];
+    return map[n - 1] || n;
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  // ========== INIT ==========
+  setupHighlightHandlers();
+  load();
+</script>
+</body>
+</html>
