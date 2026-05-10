@@ -492,6 +492,25 @@
     bottom: -4px;
   }
 
+  /* On mobile, the popup is pinned to the top of the viewport (out of the way
+     of the native iOS/Android text-selection toolbar). The arrow is hidden
+     since the popup is no longer adjacent to the selection. */
+  .hl-popup.mobile-fixed {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: auto;
+    padding: 12px 22px;
+    font-size: 14px;
+    box-shadow: 0 6px 20px rgba(30, 26, 20, 0.28), 0 2px 6px rgba(30, 26, 20, 0.18);
+    z-index: 9999;
+  }
+
+  .hl-popup.mobile-fixed::before {
+    display: none;
+  }
+
   .hl-popup.remove {
     background: var(--highlight);
   }
@@ -2921,28 +2940,27 @@
   function positionPopup(rect) {
     const popup = document.getElementById('hlPopup');
     popup.style.display = 'block';
-    const popupRect = popup.getBoundingClientRect();
-    // On mobile (narrow viewports), iOS/Safari shows its native text-selection
-    // toolbar (Copy / Look Up / Share) BELOW the selection, which overlaps our
-    // popup. So on mobile we flip the popup ABOVE the selection. We also
-    // toggle a CSS class so the little arrow on the popup points downward.
     const isMobile = window.innerWidth <= 980;
-    let top;
+    // On mobile, iOS/Android show their native selection toolbar
+    // (Copy / Look Up / Share / Paste) dynamically — above OR below the
+    // selection, wherever has the most room. To avoid an endless game of
+    // collision with our popup, we anchor our popup to the TOP of the
+    // viewport on mobile. The native toolbar stays near the selection,
+    // our popup stays at the top, and they never overlap.
     if (isMobile) {
-      popup.classList.add('above');
-      top = rect.top + window.scrollY - popupRect.height - 10;
-      // If there's no room above (selection near top of viewport), fall back
-      // to positioning below so the popup is at least visible.
-      if (rect.top - popupRect.height - 10 < 0) {
-        popup.classList.remove('above');
-        top = rect.bottom + window.scrollY + 8;
-      }
-    } else {
+      popup.classList.add('mobile-fixed');
       popup.classList.remove('above');
-      top = rect.bottom + window.scrollY + 8;
+      // Clear any inline positioning set previously on desktop; CSS handles it.
+      popup.style.top = '';
+      popup.style.left = '';
+      return;
     }
+    // Desktop: position near the selection.
+    popup.classList.remove('mobile-fixed');
+    popup.classList.remove('above');
+    const popupRect = popup.getBoundingClientRect();
+    const top = rect.bottom + window.scrollY + 8;
     let left = rect.left + window.scrollX;
-    // Don't go off right edge
     const maxLeft = window.scrollX + window.innerWidth - popupRect.width - 12;
     if (left > maxLeft) left = maxLeft;
     if (left < window.scrollX + 8) left = window.scrollX + 8;
