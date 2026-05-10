@@ -453,7 +453,7 @@
   /* Floating popup for adding selection to content listing */
   .hl-popup {
     position: absolute;
-    background: var(--accent);
+    background: #1E5AA8;
     color: var(--paper);
     padding: 8px 16px;
     font-size: 13px;
@@ -462,15 +462,16 @@
     border-radius: 2px;
     cursor: pointer;
     z-index: 1000;
-    box-shadow: 0 6px 20px -4px rgba(30,26,20,0.35), 0 2px 6px rgba(30,26,20,0.15);
+    box-shadow: 0 6px 20px -4px rgba(20, 40, 80, 0.45), 0 2px 6px rgba(20, 40, 80, 0.2);
     white-space: nowrap;
     user-select: none;
     border: none;
+    font-weight: 600;
     transition: background 0.15s ease;
   }
 
   .hl-popup:hover {
-    background: var(--accent-deep);
+    background: #173F75;
   }
 
   .hl-popup::before {
@@ -481,7 +482,7 @@
     left: 18px;
     width: 8px;
     height: 8px;
-    background: var(--accent);
+    background: #1E5AA8;
     transform: rotate(45deg);
   }
 
@@ -2846,9 +2847,11 @@
     const passage = document.getElementById('stPassage');
     const popup = document.getElementById('hlPopup');
 
-    // On selection in passage, show "+ 加入內容列項"
+    // On selection in passage, show "+ 加入內容列項".
+    // The touchend delay gives iOS / Safari enough time to finalize the
+    // selection range before we read it. 50ms was sometimes too short.
     passage.addEventListener('mouseup', handleSelection);
-    passage.addEventListener('touchend', () => setTimeout(handleSelection, 50));
+    passage.addEventListener('touchend', () => setTimeout(handleSelection, 150));
 
     // Click on existing highlight → show "移除" option
     passage.addEventListener('click', (e) => {
@@ -2884,7 +2887,17 @@
       if (e.target.closest('#stPassage')) return;
       hidePopup();
     });
-    window.addEventListener('scroll', hidePopup, true);
+    // Only dismiss on window-level scroll (not internal element scrolls).
+    // Without this guard, the passage's own internal scroll (when it's
+    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
+    // nuking the popup's context — making it inconsistent whether a tap on
+    // "加入內容列項" actually registered.
+    window.addEventListener('scroll', () => {
+      // On mobile the popup is pinned to the viewport (mobile-fixed), so
+      // scrolling can't move it away from the user. Don't dismiss.
+      if (window.innerWidth <= 980) return;
+      hidePopup();
+    });
   }
 
   function handleSelection() {
