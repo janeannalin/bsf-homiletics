@@ -477,11 +477,19 @@
     content: '';
     position: absolute;
     top: -4px;
+    bottom: auto;
     left: 18px;
     width: 8px;
     height: 8px;
     background: var(--accent);
     transform: rotate(45deg);
+  }
+
+  /* When the popup is positioned above the selection (mobile mode), flip the
+     arrow to point downward by moving it to the bottom of the popup. */
+  .hl-popup.above::before {
+    top: auto;
+    bottom: -4px;
   }
 
   .hl-popup.remove {
@@ -2913,9 +2921,26 @@
   function positionPopup(rect) {
     const popup = document.getElementById('hlPopup');
     popup.style.display = 'block';
-    // Position below the selection by default
     const popupRect = popup.getBoundingClientRect();
-    const top = rect.bottom + window.scrollY + 8;
+    // On mobile (narrow viewports), iOS/Safari shows its native text-selection
+    // toolbar (Copy / Look Up / Share) BELOW the selection, which overlaps our
+    // popup. So on mobile we flip the popup ABOVE the selection. We also
+    // toggle a CSS class so the little arrow on the popup points downward.
+    const isMobile = window.innerWidth <= 980;
+    let top;
+    if (isMobile) {
+      popup.classList.add('above');
+      top = rect.top + window.scrollY - popupRect.height - 10;
+      // If there's no room above (selection near top of viewport), fall back
+      // to positioning below so the popup is at least visible.
+      if (rect.top - popupRect.height - 10 < 0) {
+        popup.classList.remove('above');
+        top = rect.bottom + window.scrollY + 8;
+      }
+    } else {
+      popup.classList.remove('above');
+      top = rect.bottom + window.scrollY + 8;
+    }
     let left = rect.left + window.scrollX;
     // Don't go off right edge
     const maxLeft = window.scrollX + window.innerWidth - popupRect.width - 12;
