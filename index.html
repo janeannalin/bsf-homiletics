@@ -453,7 +453,7 @@
   /* Floating popup for adding selection to content listing */
   .hl-popup {
     position: absolute;
-    background: var(--accent);
+    background: #1E5AA8;
     color: var(--paper);
     padding: 8px 16px;
     font-size: 13px;
@@ -462,26 +462,60 @@
     border-radius: 2px;
     cursor: pointer;
     z-index: 1000;
-    box-shadow: 0 6px 20px -4px rgba(30,26,20,0.35), 0 2px 6px rgba(30,26,20,0.15);
+    box-shadow: 0 6px 20px -4px rgba(20, 40, 80, 0.45), 0 2px 6px rgba(20, 40, 80, 0.2);
     white-space: nowrap;
     user-select: none;
+    -webkit-user-select: none;
     border: none;
+    font-weight: 600;
     transition: background 0.15s ease;
+    /* Tell iOS this is a tap target — disables double-tap zoom + reduces
+       tap delay. Helps the popup stay responsive after several successive
+       interactions, which is when iOS can otherwise get sluggish. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .hl-popup:hover {
-    background: var(--accent-deep);
+    background: #173F75;
   }
 
   .hl-popup::before {
     content: '';
     position: absolute;
     top: -4px;
+    bottom: auto;
     left: 18px;
     width: 8px;
     height: 8px;
-    background: var(--accent);
+    background: #1E5AA8;
     transform: rotate(45deg);
+  }
+
+  /* When the popup is positioned above the selection (mobile mode), flip the
+     arrow to point downward by moving it to the bottom of the popup. */
+  .hl-popup.above::before {
+    top: auto;
+    bottom: -4px;
+  }
+
+  /* On mobile, the popup is pinned to the top of the viewport (out of the way
+     of the native iOS/Android text-selection toolbar). The arrow is hidden
+     since the popup is no longer adjacent to the selection. */
+  .hl-popup.mobile-fixed {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: auto;
+    padding: 12px 22px;
+    font-size: 14px;
+    box-shadow: 0 6px 20px rgba(30, 26, 20, 0.28), 0 2px 6px rgba(30, 26, 20, 0.18);
+    z-index: 9999;
+  }
+
+  .hl-popup.mobile-fixed::before {
+    display: none;
   }
 
   .hl-popup.remove {
@@ -1280,76 +1314,21 @@
     margin-bottom: 0;
   }
 
-  /* Hidden by default — only visible in mobile + 2-col mode. */
-  .mobile-resizer {
-    display: none;
-  }
-
-  /* On narrower screens, fall back to single-column even in 2-col mode
-     by default — UNLESS the user is in 雙欄 mode, in which case we apply
-     a split-pane layout: passage pinned to viewport top, draggable
-     divider, and Steps + 綜覽 scrolling below. */
+  /* On narrower screens (mobile/tablet), the side-by-side 2-column layout
+     would be too cramped. Fall back to single-column scroll regardless of
+     the user's 單欄/雙欄 preference, so everything stacks naturally and
+     scrolls as one page. The 雙欄 preference is preserved and re-applied
+     automatically once the viewport is wider than 980px. */
   @media (max-width: 980px) {
-    /* Pin the Scripture passage to the very top of the viewport. */
-    body.layout-2col .scripture-text {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--mobile-passage-height, 40vh);
-      z-index: 100;
-      overflow-y: auto;
-      margin: 0;
-      border-radius: 0;
-      border-left: none;
-      border-right: none;
-      border-top: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      padding: 18px 20px;
-    }
-
-    /* Show the draggable divider just below the fixed passage. */
-    body.layout-2col .mobile-resizer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: fixed;
-      top: var(--mobile-passage-height, 40vh);
-      left: 0;
-      right: 0;
-      height: 18px;
-      z-index: 101;
-      background: var(--bg-2);
-      border-top: 1px solid var(--rule);
-      border-bottom: 1px solid var(--rule);
-      cursor: ns-resize;
-      touch-action: none;
-      user-select: none;
-    }
-
-    body.layout-2col .mobile-resizer-grip {
-      display: block;
-      width: 44px;
-      height: 4px;
-      background: var(--accent);
-      border-radius: 2px;
-      opacity: 0.55;
-      transition: opacity 0.15s ease;
-    }
-
-    body.layout-2col .mobile-resizer:hover .mobile-resizer-grip,
-    body.layout-2col .mobile-resizer:active .mobile-resizer-grip {
-      opacity: 1;
-    }
-
-    /* Push everything else below the fixed passage + resizer. */
-    body.layout-2col .container {
-      padding-top: calc(var(--mobile-passage-height, 40vh) + 26px);
-    }
-
-    /* Reset the work-area to normal block flow so steps + summary scroll naturally. */
     body.layout-2col .work-area {
       display: block;
+    }
+    body.layout-2col .scripture-text {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+      margin-bottom: 24px;
+      padding-right: 30px;
     }
   }
 
@@ -1474,13 +1453,6 @@
     <textarea class="st-edit no-i18n" id="stEdit" style="display:none" placeholder="貼上或編輯經文… 例如：&#10;8 凡事都不可虧欠人，惟有彼此相愛要常以為虧欠…" oninput="onEditInput()"></textarea>
     <div class="st-hint">提示：在經文中選取關鍵字句，可一鍵加入下方「內容列項」</div>
     <div class="st-attribution" id="stAttribution"></div>
-  </div>
-
-  <!-- Draggable divider — only visible in mobile + 2-column mode.
-       Above it the Scripture passage is pinned to the viewport top;
-       below it Steps I-V and 綜覽 scroll. User drags to resize. -->
-  <div class="mobile-resizer" id="mobileResizer" aria-hidden="true">
-    <span class="mobile-resizer-grip"></span>
   </div>
 
   <!-- WORK STEPS: holds the 5 steps. In 2-col mode, this becomes the right column. -->
@@ -2463,64 +2435,6 @@
     });
   }
 
-  // ========== MOBILE RESIZER (split-pane in mobile + 2-col mode) ==========
-  // Allows the user to drag a horizontal bar to resize the pinned Scripture
-  // passage at the top vs. the scrolling content below (Steps I–V + 綜覽).
-  // Only active in mobile + 2-col mode (CSS handles the visibility).
-  function initMobileResizer() {
-    const resizer = document.getElementById('mobileResizer');
-    if (!resizer) return;
-
-    let dragging = false;
-    let startY = 0;
-    let startHeight = 0;
-
-    function clampHeight(h) {
-      // Keep both panels usable: at least 120px passage, and at least 200px below.
-      return Math.max(120, Math.min(window.innerHeight - 200, h));
-    }
-
-    function applyHeight(h) {
-      document.documentElement.style.setProperty('--mobile-passage-height', h + 'px');
-    }
-
-    resizer.addEventListener('pointerdown', (e) => {
-      // Only act in mobile + 2-col mode (when resizer is actually visible)
-      if (getComputedStyle(resizer).display === 'none') return;
-      dragging = true;
-      startY = e.clientY;
-      const passageEl = document.querySelector('.scripture-text');
-      startHeight = passageEl ? passageEl.getBoundingClientRect().height : window.innerHeight * 0.4;
-      try { resizer.setPointerCapture(e.pointerId); } catch (err) {}
-      e.preventDefault();
-    });
-
-    resizer.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const dy = e.clientY - startY;
-      applyHeight(clampHeight(startHeight + dy));
-    });
-
-    function endDrag(e) {
-      if (!dragging) return;
-      dragging = false;
-      try { resizer.releasePointerCapture(e.pointerId); } catch (err) {}
-      // Persist the height so it survives reloads.
-      const passageEl = document.querySelector('.scripture-text');
-      if (passageEl) {
-        state.mobilePassageHeight = Math.round(passageEl.getBoundingClientRect().height) + 'px';
-        save();
-      }
-    }
-    resizer.addEventListener('pointerup', endDrag);
-    resizer.addEventListener('pointercancel', endDrag);
-
-    // Apply persisted height on init (if any)
-    if (state.mobilePassageHeight) {
-      document.documentElement.style.setProperty('--mobile-passage-height', state.mobilePassageHeight);
-    }
-  }
-
   // Update RCUV official site link based on current scripture and language.
   // TC mode → rcuv.hkbs.org.hk (Hong Kong Bible Society's official site, Traditional Chinese)
   // SC mode → bible.com/bible/140/<BOOK>.<CHAPTER>.RCUVSS (RCUVSS = the 简体 edition, also published by HKBS)
@@ -2813,9 +2727,11 @@
     const passage = document.getElementById('stPassage');
     const popup = document.getElementById('hlPopup');
 
-    // On selection in passage, show "+ 加入內容列項"
+    // On selection in passage, show "+ 加入內容列項".
+    // The touchend delay gives iOS / Safari enough time to finalize the
+    // selection range before we read it. 50ms was sometimes too short.
     passage.addEventListener('mouseup', handleSelection);
-    passage.addEventListener('touchend', () => setTimeout(handleSelection, 50));
+    passage.addEventListener('touchend', () => setTimeout(handleSelection, 150));
 
     // Click on existing highlight → show "移除" option
     passage.addEventListener('click', (e) => {
@@ -2828,21 +2744,35 @@
       }
     });
 
-    // Popup click → execute action
+    // Popup click → execute action.
+    // On desktop we preventDefault on mousedown to keep the text selection
+    // alive while the user clicks the popup. On mobile this isn't needed
+    // (the popup is pinned to the top of the viewport, far from the selection,
+    // and we've already captured the data in _popupContext). Worse, on iOS the
+    // synthetic mousedown's preventDefault can interfere with click delivery
+    // after a few iterations, making the popup appear "dead" — which matches
+    // the symptom of highlights stopping after 2-3 successful adds.
     popup.addEventListener('mousedown', (e) => {
-      e.preventDefault(); // don't blur the selection
+      if (window.innerWidth > 980) {
+        e.preventDefault();
+      }
     });
     popup.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (!_popupContext) return;
-      if (_popupContext.mode === 'add') {
-        addHighlightToContent(_popupContext.text, _popupContext.verse);
-      } else if (_popupContext.mode === 'remove') {
-        removeHighlight(_popupContext.contentId, _popupContext.hlIdx);
-      }
+      // Snapshot the context locally, then clear popup state and the live
+      // selection BEFORE invoking the action (which calls render() and
+      // rebuilds the passage DOM). Clearing selection first gives iOS a
+      // clean state to work with on the next selection.
+      const ctx = _popupContext;
       hidePopup();
-      window.getSelection().removeAllRanges();
+      try { window.getSelection().removeAllRanges(); } catch (err) {}
+      if (ctx.mode === 'add') {
+        addHighlightToContent(ctx.text, ctx.verse);
+      } else if (ctx.mode === 'remove') {
+        removeHighlight(ctx.contentId, ctx.hlIdx);
+      }
     });
 
     // Hide popup on outside click / scroll
@@ -2851,20 +2781,31 @@
       if (e.target.closest('#stPassage')) return;
       hidePopup();
     });
-    window.addEventListener('scroll', hidePopup, true);
+    // Only dismiss on window-level scroll (not internal element scrolls).
+    // Without this guard, the passage's own internal scroll (when it's
+    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
+    // nuking the popup's context — making it inconsistent whether a tap on
+    // "加入內容列項" actually registered.
+    window.addEventListener('scroll', () => {
+      // On mobile the popup is pinned to the viewport (mobile-fixed), so
+      // scrolling can't move it away from the user. Don't dismiss.
+      if (window.innerWidth <= 980) return;
+      hidePopup();
+    });
   }
 
   function handleSelection() {
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed) {
-      hidePopup();
-      return;
-    }
+    // If there's no live text selection, do nothing. The popup (if showing)
+    // already has its data captured in _popupContext, so it remains valid
+    // and tappable. Dismissal happens only via explicit outside-click
+    // (document mousedown handler) or by tapping the popup itself.
+    // This prevents iOS quirks — like a stray touchend after the selection
+    // gesture, or a tap on the passage to dismiss the native toolbar — from
+    // unintentionally hiding our popup before the user can act on it.
+    if (!sel || sel.isCollapsed) return;
     const text = sel.toString().trim();
-    if (!text || text.length < 1) {
-      hidePopup();
-      return;
-    }
+    if (!text || text.length < 1) return;
     // Make sure selection is inside passage
     const range = sel.getRangeAt(0);
     const passage = document.getElementById('stPassage');
@@ -2907,11 +2848,27 @@
   function positionPopup(rect) {
     const popup = document.getElementById('hlPopup');
     popup.style.display = 'block';
-    // Position below the selection by default
+    const isMobile = window.innerWidth <= 980;
+    // On mobile, iOS/Android show their native selection toolbar
+    // (Copy / Look Up / Share / Paste) dynamically — above OR below the
+    // selection, wherever has the most room. To avoid an endless game of
+    // collision with our popup, we anchor our popup to the TOP of the
+    // viewport on mobile. The native toolbar stays near the selection,
+    // our popup stays at the top, and they never overlap.
+    if (isMobile) {
+      popup.classList.add('mobile-fixed');
+      popup.classList.remove('above');
+      // Clear any inline positioning set previously on desktop; CSS handles it.
+      popup.style.top = '';
+      popup.style.left = '';
+      return;
+    }
+    // Desktop: position near the selection.
+    popup.classList.remove('mobile-fixed');
+    popup.classList.remove('above');
     const popupRect = popup.getBoundingClientRect();
     const top = rect.bottom + window.scrollY + 8;
     let left = rect.left + window.scrollX;
-    // Don't go off right edge
     const maxLeft = window.scrollX + window.innerWidth - popupRect.width - 12;
     if (left > maxLeft) left = maxLeft;
     if (left < window.scrollX + 8) left = window.scrollX + 8;
@@ -3118,52 +3075,58 @@
     updateRcuvLink();
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
-      await storageSet(STORAGE_KEY, JSON.stringify(state));
+      // Persist ONLY UI preferences so each new session starts with a clean
+      // sheet. The actual study content lives in memory for this session only.
+      // To carry work between sessions the user exports via 儲存內容.
+      const prefs = {
+        lang: state.lang,
+        layout: state.layout,
+        translation: state.translation,
+        scriptureMode: state.scriptureMode,
+        hintsCollapsed: state.hintsCollapsed
+      };
+      await storageSet(STORAGE_KEY, JSON.stringify(prefs));
     }, 250);
   }
 
   async function load() {
     const raw = await storageGet(STORAGE_KEY);
+    // Each new session starts with a clean slate for the study content
+    // (scripture, content rows, sections, topic, main idea, applications).
+    // We only restore UI preferences (language, layout, scriptureMode, hint
+    // expansion, translation choice) from previous sessions, so the user
+    // gets a fresh worksheet to fill in each time they open the page.
+    // To carry work between sessions, the user can export to JSON via
+    // 儲存內容 and re-import via 開啟過往內容.
     if (raw) {
       try {
         const parsed = JSON.parse(raw);
-        state = Object.assign(state, parsed);
+        if (parsed.lang) state.lang = parsed.lang;
+        if (parsed.layout) state.layout = parsed.layout;
+        if (parsed.translation) state.translation = parsed.translation;
+        if (parsed.scriptureMode) state.scriptureMode = parsed.scriptureMode;
+        if (Array.isArray(parsed.hintsCollapsed)) state.hintsCollapsed = parsed.hintsCollapsed;
       } catch (e) {}
     }
-    if (!state.content.length && !state.scripture) {
-      // First-time load: show example
-      state = JSON.parse(JSON.stringify(EXAMPLE));
-    }
-    // Backward compat: ensure every content row has an id
-    state.content.forEach(c => {
-      if (!c.id) c.id = 'm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      if (c.fromHighlight === undefined) c.fromHighlight = false;
-    });
-    // Default language to TC if not set
+    // Defaults if any UI prefs aren't yet set
     if (!state.lang) state.lang = 'TC';
-    // Default layout to 1-column if not set
     if (!state.layout) state.layout = '1col';
-    // Default hints all expanded
     if (!Array.isArray(state.hintsCollapsed)) state.hintsCollapsed = [false, false, false, false, false];
-    // Default scripture mode to manual
     if (!state.scriptureMode) state.scriptureMode = 'manual';
+    // Seed the empty UI with one blank row per step so the user sees ready
+    // input slots rather than empty step blocks.
+    if (!state.content.length) state.content.push({ verse: '', text: '' });
+    if (!state.sections.length) state.sections.push({ verses: '', summary: '' });
+    if (!state.applications.length) state.applications.push('');
     render();
     applyLang(state.lang);
     applyLayout(state.layout);
     applyHintCollapse();
-    initMobileResizer();
-    // If user previously enabled BSF auto-load, attempt it on open
-    // (silent visual update + auto-load if BSF mode is active).
-    if (state.scriptureMode === 'bsf') {
-      // Apply the visual state silently first
-      applyScriptureMode('bsf', { silent: true });
-      // Only auto-load if scripture is empty (don't clobber existing work)
-      if (!state.scripture || state.scripture.trim() === '') {
-        applyScriptureMode('bsf');
-      }
-    } else {
-      applyScriptureMode('manual', { silent: true });
-    }
+    // If the user previously had BSF auto-load enabled, restore that visual
+    // state — but DO NOT auto-fill the Scripture field. They can re-click
+    // "本週 BSF" if they want today's passage. This keeps the "empty sheet"
+    // starting state honest.
+    applyScriptureMode(state.scriptureMode, { silent: true });
   }
 
   function loadExample() {
