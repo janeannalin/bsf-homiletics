@@ -465,9 +465,15 @@
     box-shadow: 0 6px 20px -4px rgba(20, 40, 80, 0.45), 0 2px 6px rgba(20, 40, 80, 0.2);
     white-space: nowrap;
     user-select: none;
+    -webkit-user-select: none;
     border: none;
     font-weight: 600;
     transition: background 0.15s ease;
+    /* Tell iOS this is a tap target — disables double-tap zoom + reduces
+       tap delay. Helps the popup stay responsive after several successive
+       interactions, which is when iOS can otherwise get sluggish. */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .hl-popup:hover {
@@ -1328,6 +1334,10 @@
       height: var(--mobile-passage-height, 40vh);
       z-index: 100;
       overflow-y: auto;
+      /* Use iOS momentum scrolling — smoother and less likely to leave
+         selection state in a confused mid-scroll condition after several
+         touch interactions. */
+      -webkit-overflow-scrolling: touch;
       margin: 0;
       border-radius: 0;
       border-left: none;
@@ -2864,21 +2874,35 @@
       }
     });
 
-    // Popup click → execute action
+    // Popup click → execute action.
+    // On desktop we preventDefault on mousedown to keep the text selection
+    // alive while the user clicks the popup. On mobile this isn't needed
+    // (the popup is pinned to the top of the viewport, far from the selection,
+    // and we've already captured the data in _popupContext). Worse, on iOS the
+    // synthetic mousedown's preventDefault can interfere with click delivery
+    // after a few iterations, making the popup appear "dead" — which matches
+    // the symptom of highlights stopping after 2-3 successful adds.
     popup.addEventListener('mousedown', (e) => {
-      e.preventDefault(); // don't blur the selection
+      if (window.innerWidth > 980) {
+        e.preventDefault();
+      }
     });
     popup.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (!_popupContext) return;
-      if (_popupContext.mode === 'add') {
-        addHighlightToContent(_popupContext.text, _popupContext.verse);
-      } else if (_popupContext.mode === 'remove') {
-        removeHighlight(_popupContext.contentId, _popupContext.hlIdx);
-      }
+      // Snapshot the context locally, then clear popup state and the live
+      // selection BEFORE invoking the action (which calls render() and
+      // rebuilds the passage DOM). Clearing selection first gives iOS a
+      // clean state to work with on the next selection.
+      const ctx = _popupContext;
       hidePopup();
-      window.getSelection().removeAllRanges();
+      try { window.getSelection().removeAllRanges(); } catch (err) {}
+      if (ctx.mode === 'add') {
+        addHighlightToContent(ctx.text, ctx.verse);
+      } else if (ctx.mode === 'remove') {
+        removeHighlight(ctx.contentId, ctx.hlIdx);
+      }
     });
 
     // Hide popup on outside click / scroll
