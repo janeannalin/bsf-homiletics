@@ -453,7 +453,7 @@
   /* Floating popup for adding selection to content listing */
   .hl-popup {
     position: absolute;
-    background: #1E5AA8;
+    background: var(--accent);
     color: var(--paper);
     padding: 8px 16px;
     font-size: 13px;
@@ -462,60 +462,26 @@
     border-radius: 2px;
     cursor: pointer;
     z-index: 1000;
-    box-shadow: 0 6px 20px -4px rgba(20, 40, 80, 0.45), 0 2px 6px rgba(20, 40, 80, 0.2);
+    box-shadow: 0 6px 20px -4px rgba(30,26,20,0.35), 0 2px 6px rgba(30,26,20,0.15);
     white-space: nowrap;
     user-select: none;
-    -webkit-user-select: none;
     border: none;
-    font-weight: 600;
     transition: background 0.15s ease;
-    /* Tell iOS this is a tap target — disables double-tap zoom + reduces
-       tap delay. Helps the popup stay responsive after several successive
-       interactions, which is when iOS can otherwise get sluggish. */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
 
   .hl-popup:hover {
-    background: #173F75;
+    background: var(--accent-deep);
   }
 
   .hl-popup::before {
     content: '';
     position: absolute;
     top: -4px;
-    bottom: auto;
     left: 18px;
     width: 8px;
     height: 8px;
-    background: #1E5AA8;
+    background: var(--accent);
     transform: rotate(45deg);
-  }
-
-  /* When the popup is positioned above the selection (mobile mode), flip the
-     arrow to point downward by moving it to the bottom of the popup. */
-  .hl-popup.above::before {
-    top: auto;
-    bottom: -4px;
-  }
-
-  /* On mobile, the popup is pinned to the top of the viewport (out of the way
-     of the native iOS/Android text-selection toolbar). The arrow is hidden
-     since the popup is no longer adjacent to the selection. */
-  .hl-popup.mobile-fixed {
-    position: fixed;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: auto;
-    padding: 12px 22px;
-    font-size: 14px;
-    box-shadow: 0 6px 20px rgba(30, 26, 20, 0.28), 0 2px 6px rgba(30, 26, 20, 0.18);
-    z-index: 9999;
-  }
-
-  .hl-popup.mobile-fixed::before {
-    display: none;
   }
 
   .hl-popup.remove {
@@ -1321,41 +1287,34 @@
 
   /* On narrower screens, fall back to single-column even in 2-col mode
      by default — UNLESS the user is in 雙欄 mode, in which case we apply
-     a split-pane layout: passage pinned to the BOTTOM of the viewport,
-     draggable divider above it, and Steps + 綜覽 scrolling above. */
+     a split-pane layout: passage pinned to viewport top, draggable
+     divider, and Steps + 綜覽 scrolling below. */
   @media (max-width: 980px) {
-    /* Pin the Scripture passage to the very BOTTOM of the viewport. */
+    /* Pin the Scripture passage to the very top of the viewport. */
     body.layout-2col .scripture-text {
       position: fixed;
-      bottom: 0;
-      top: auto;
+      top: 0;
       left: 0;
       right: 0;
       height: var(--mobile-passage-height, 40vh);
       z-index: 100;
       overflow-y: auto;
-      /* Use iOS momentum scrolling — smoother and less likely to leave
-         selection state in a confused mid-scroll condition after several
-         touch interactions. */
-      -webkit-overflow-scrolling: touch;
       margin: 0;
       border-radius: 0;
       border-left: none;
       border-right: none;
-      border-bottom: none;
-      border-top: 1px solid var(--rule);
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+      border-top: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       padding: 18px 20px;
     }
 
-    /* Show the draggable divider just ABOVE the fixed passage. */
+    /* Show the draggable divider just below the fixed passage. */
     body.layout-2col .mobile-resizer {
       display: flex;
       align-items: center;
       justify-content: center;
       position: fixed;
-      bottom: var(--mobile-passage-height, 40vh);
-      top: auto;
+      top: var(--mobile-passage-height, 40vh);
       left: 0;
       right: 0;
       height: 18px;
@@ -1383,10 +1342,9 @@
       opacity: 1;
     }
 
-    /* Reserve space at the BOTTOM of the page so content isn't hidden
-       behind the fixed passage + resizer. */
+    /* Push everything else below the fixed passage + resizer. */
     body.layout-2col .container {
-      padding-bottom: calc(var(--mobile-passage-height, 40vh) + 26px);
+      padding-top: calc(var(--mobile-passage-height, 40vh) + 26px);
     }
 
     /* Reset the work-area to normal block flow so steps + summary scroll naturally. */
@@ -2539,10 +2497,8 @@
 
     resizer.addEventListener('pointermove', (e) => {
       if (!dragging) return;
-      // Passage is pinned to the BOTTOM, so dragging the bar UP (negative dy)
-      // should make the passage taller, and dragging DOWN should shrink it.
       const dy = e.clientY - startY;
-      applyHeight(clampHeight(startHeight - dy));
+      applyHeight(clampHeight(startHeight + dy));
     });
 
     function endDrag(e) {
@@ -2857,11 +2813,9 @@
     const passage = document.getElementById('stPassage');
     const popup = document.getElementById('hlPopup');
 
-    // On selection in passage, show "+ 加入內容列項".
-    // The touchend delay gives iOS / Safari enough time to finalize the
-    // selection range before we read it. 50ms was sometimes too short.
+    // On selection in passage, show "+ 加入內容列項"
     passage.addEventListener('mouseup', handleSelection);
-    passage.addEventListener('touchend', () => setTimeout(handleSelection, 150));
+    passage.addEventListener('touchend', () => setTimeout(handleSelection, 50));
 
     // Click on existing highlight → show "移除" option
     passage.addEventListener('click', (e) => {
@@ -2874,35 +2828,21 @@
       }
     });
 
-    // Popup click → execute action.
-    // On desktop we preventDefault on mousedown to keep the text selection
-    // alive while the user clicks the popup. On mobile this isn't needed
-    // (the popup is pinned to the top of the viewport, far from the selection,
-    // and we've already captured the data in _popupContext). Worse, on iOS the
-    // synthetic mousedown's preventDefault can interfere with click delivery
-    // after a few iterations, making the popup appear "dead" — which matches
-    // the symptom of highlights stopping after 2-3 successful adds.
+    // Popup click → execute action
     popup.addEventListener('mousedown', (e) => {
-      if (window.innerWidth > 980) {
-        e.preventDefault();
-      }
+      e.preventDefault(); // don't blur the selection
     });
     popup.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (!_popupContext) return;
-      // Snapshot the context locally, then clear popup state and the live
-      // selection BEFORE invoking the action (which calls render() and
-      // rebuilds the passage DOM). Clearing selection first gives iOS a
-      // clean state to work with on the next selection.
-      const ctx = _popupContext;
-      hidePopup();
-      try { window.getSelection().removeAllRanges(); } catch (err) {}
-      if (ctx.mode === 'add') {
-        addHighlightToContent(ctx.text, ctx.verse);
-      } else if (ctx.mode === 'remove') {
-        removeHighlight(ctx.contentId, ctx.hlIdx);
+      if (_popupContext.mode === 'add') {
+        addHighlightToContent(_popupContext.text, _popupContext.verse);
+      } else if (_popupContext.mode === 'remove') {
+        removeHighlight(_popupContext.contentId, _popupContext.hlIdx);
       }
+      hidePopup();
+      window.getSelection().removeAllRanges();
     });
 
     // Hide popup on outside click / scroll
@@ -2911,31 +2851,20 @@
       if (e.target.closest('#stPassage')) return;
       hidePopup();
     });
-    // Only dismiss on window-level scroll (not internal element scrolls).
-    // Without this guard, the passage's own internal scroll (when it's
-    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
-    // nuking the popup's context — making it inconsistent whether a tap on
-    // "加入內容列項" actually registered.
-    window.addEventListener('scroll', () => {
-      // On mobile the popup is pinned to the viewport (mobile-fixed), so
-      // scrolling can't move it away from the user. Don't dismiss.
-      if (window.innerWidth <= 980) return;
-      hidePopup();
-    });
+    window.addEventListener('scroll', hidePopup, true);
   }
 
   function handleSelection() {
     const sel = window.getSelection();
-    // If there's no live text selection, do nothing. The popup (if showing)
-    // already has its data captured in _popupContext, so it remains valid
-    // and tappable. Dismissal happens only via explicit outside-click
-    // (document mousedown handler) or by tapping the popup itself.
-    // This prevents iOS quirks — like a stray touchend after the selection
-    // gesture, or a tap on the passage to dismiss the native toolbar — from
-    // unintentionally hiding our popup before the user can act on it.
-    if (!sel || sel.isCollapsed) return;
+    if (!sel || sel.isCollapsed) {
+      hidePopup();
+      return;
+    }
     const text = sel.toString().trim();
-    if (!text || text.length < 1) return;
+    if (!text || text.length < 1) {
+      hidePopup();
+      return;
+    }
     // Make sure selection is inside passage
     const range = sel.getRangeAt(0);
     const passage = document.getElementById('stPassage');
@@ -2978,27 +2907,11 @@
   function positionPopup(rect) {
     const popup = document.getElementById('hlPopup');
     popup.style.display = 'block';
-    const isMobile = window.innerWidth <= 980;
-    // On mobile, iOS/Android show their native selection toolbar
-    // (Copy / Look Up / Share / Paste) dynamically — above OR below the
-    // selection, wherever has the most room. To avoid an endless game of
-    // collision with our popup, we anchor our popup to the TOP of the
-    // viewport on mobile. The native toolbar stays near the selection,
-    // our popup stays at the top, and they never overlap.
-    if (isMobile) {
-      popup.classList.add('mobile-fixed');
-      popup.classList.remove('above');
-      // Clear any inline positioning set previously on desktop; CSS handles it.
-      popup.style.top = '';
-      popup.style.left = '';
-      return;
-    }
-    // Desktop: position near the selection.
-    popup.classList.remove('mobile-fixed');
-    popup.classList.remove('above');
+    // Position below the selection by default
     const popupRect = popup.getBoundingClientRect();
     const top = rect.bottom + window.scrollY + 8;
     let left = rect.left + window.scrollX;
+    // Don't go off right edge
     const maxLeft = window.scrollX + window.innerWidth - popupRect.width - 12;
     if (left > maxLeft) left = maxLeft;
     if (left < window.scrollX + 8) left = window.scrollX + 8;
