@@ -452,6 +452,7 @@
 
   /* Floating popup for adding selection to content listing */
   .hl-popup {
+    display: none;
     position: absolute;
     background: #1E5AA8;
     color: var(--paper);
@@ -1046,7 +1047,7 @@
     font-style: italic;
     font-size: 13px;
     color: var(--muted);
-    text-align: right;
+    text-align: left;
     letter-spacing: 0.04em;
   }
 
@@ -1276,12 +1277,13 @@
 
   /* === LAYOUT MODES ===
      1-column (default): everything stacks vertically in normal flow.
-     2-column: passage block stays sticky on the left while the user works
-               through the 5 steps on the right. */
+     2-column: left column is sticky (passage + any moved steps);
+               right column holds remaining steps. */
   .work-area {
     /* default: pass-through container; children flow as block */
   }
 
+  /* The .work-area in 2-col is a side-by-side grid. */
   body.layout-2col .work-area {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -1290,44 +1292,173 @@
     margin-bottom: 32px;
   }
 
-  body.layout-2col .scripture-text {
+  /* Left column: sticky, scrolls internally */
+  body.layout-2col .col-left {
     position: sticky;
     top: 16px;
     align-self: start;
-    margin-bottom: 0;
-    /* Cap the height so a long passage scrolls inside its own card
-       instead of running off-screen. */
     max-height: calc(100vh - 32px);
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  /* Slimmer passage card padding in 2-col mode to make room */
+  /* Remove default bottom margin for steps inside columns
+     since gap handles spacing */
+  body.layout-2col .col-left .step,
+  body.layout-2col .col-right .step {
+    margin-bottom: 0;
+  }
+
+  body.layout-2col .col-left .scripture-text {
+    margin-bottom: 0;
+  }
+
+  /* Slimmer passage card padding in 2-col mode */
   body.layout-2col .scripture-text {
     padding-right: 22px;
   }
 
-  body.layout-2col .work-steps > .step {
-    margin-bottom: 24px;
+  /* Right column: normal scroll */
+  body.layout-2col .col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 
-  body.layout-2col .work-steps > .step:last-child {
-    margin-bottom: 0;
+  /* === DESKTOP MOVE BUTTONS === */
+  /* Only show in 2-col on desktop */
+  .step-move-btn {
+    display: none; /* hidden by default */
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    padding: 5px 10px;
+    background: var(--bg-2);
+    color: var(--accent-soft);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .step-move-btn:hover {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+
+  @media (min-width: 981px) {
+    body.layout-2col .step-move-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+
+  /* === MOBILE DIVISIONS REFERENCE (Step V) === */
+  .mobile-div-ref {
+    display: none; /* shown via media query */
+    margin-bottom: 18px;
+  }
+
+  @media (max-width: 980px) {
+    .mobile-div-ref {
+      display: block;
+    }
+  }
+
+  .mobile-div-ref-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0 0 10px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 13.5px;
+    color: var(--accent);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+
+  .mobile-div-ref-toggle .mdr-chevron {
+    font-size: 14px;
+    color: var(--accent);
+    transition: transform 0.18s ease;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .mobile-div-ref.collapsed .mdr-chevron {
+    transform: rotate(-90deg);
+  }
+
+  .mobile-div-ref-body {
+    background: var(--bg-2);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .mobile-div-ref.collapsed .mobile-div-ref-body {
+    display: none;
+  }
+
+  .mobile-div-ref-body ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .mobile-div-ref-body li {
+    margin-bottom: 4px;
+  }
+
+  .mobile-div-ref-body .mdr-empty {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .mobile-div-ref-body .mdr-verses {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+    margin-right: 4px;
   }
 
   /* On narrower screens (mobile/tablet), the side-by-side 2-column layout
-     would be too cramped. Fall back to single-column scroll regardless of
-     the user's 單欄/雙欄 preference, so everything stacks naturally and
-     scrolls as one page. The 雙欄 preference is preserved and re-applied
-     automatically once the viewport is wider than 980px. */
+     collapses to single column. Preserve user preference but display as 1-col. */
   @media (max-width: 980px) {
     body.layout-2col .work-area {
       display: block;
     }
-    body.layout-2col .scripture-text {
+    body.layout-2col .col-left,
+    body.layout-2col .col-right {
+      display: contents; /* let children flow in doc order */
+    }
+    body.layout-2col .col-left {
       position: static;
       max-height: none;
       overflow-y: visible;
-      margin-bottom: 24px;
+    }
+    /* Restore normal bottom margin for steps in mobile */
+    body.layout-2col .col-left .step,
+    body.layout-2col .col-right .step {
+      margin-bottom: 28px;
+    }
+    body.layout-2col .col-left .scripture-text {
+      margin-bottom: 28px;
+    }
+    body.layout-2col .scripture-text {
       padding-right: 30px;
     }
   }
@@ -1359,11 +1490,22 @@
     body.layout-2col .work-area {
       display: block;
     }
+    body.layout-2col .col-left,
+    body.layout-2col .col-right {
+      display: contents;
+    }
+    body.layout-2col .col-left {
+      position: static;
+      max-height: none;
+      overflow-y: visible;
+    }
     body.layout-2col .scripture-text {
       position: static;
       max-height: none;
       overflow-y: visible;
     }
+    .step-move-btn { display: none !important; }
+    .mobile-div-ref { display: none !important; }
   }
 
   /* === RESPONSIVE === */
@@ -1421,10 +1563,14 @@
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
-       In 1-column mode, everything stacks vertically as before.
-       In 2-column mode (body.layout-2col), this becomes a CSS Grid where
-       the Passage stays sticky on the left and the 5 Steps stack on the right. -->
+       In 1-column mode, everything stacks vertically via the col-left/col-right
+       display:contents fallback.
+       In 2-column mode (body.layout-2col on desktop), col-left is a sticky
+       left rail and col-right holds remaining steps. -->
   <div class="work-area">
+
+  <!-- LEFT COLUMN: Passage always here; steps can be moved in -->
+  <div class="col-left" id="colLeft">
 
   <!-- SCRIPTURE TEXT -->
   <div class="scripture-text">
@@ -1455,17 +1601,20 @@
     <div class="st-attribution" id="stAttribution"></div>
   </div>
 
-  <!-- WORK STEPS: holds the 5 steps. In 2-col mode, this becomes the right column. -->
-  <div class="work-steps">
+  </div><!-- /.col-left -->
+
+  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄) -->
+  <div class="col-right" id="colRight">
 
   <!-- STEP 1: CONTENT -->
-  <div class="step">
+  <div class="step" id="stepContent" data-step-key="content">
     <div class="step-head">
       <div class="step-num">I</div>
       <div class="step-head-text">
         <h2 class="step-title">內容列項 <span class="step-en">Content</span></h2>
         <div class="step-tagline">列出經文論及的主題或事件 &middot; <span class="en">List of topics or events</span></div>
       </div>
+      <button class="step-move-btn" data-step="content" onclick="moveStep('content')" title="移到左欄">⇐ 移到左欄</button>
     </div>
     <div class="hint">
       <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
@@ -1484,20 +1633,20 @@
   </div>
 
   <!-- STEP 2: SECTIONS -->
-  <div class="step">
+  <div class="step" id="stepSections" data-step-key="sections">
     <div class="step-head">
       <div class="step-num">II</div>
       <div class="step-head-text">
         <h2 class="step-title">分段 <span class="step-en">Divisions</span></h2>
         <div class="step-tagline">簡明的摘要句 &middot; <span class="en">Summary sentences</span></div>
       </div>
+      <button class="step-move-btn" data-step="sections" onclick="moveStep('sections')" title="移到左欄">⇐ 移到左欄</button>
     </div>
     <div class="hint">
       <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
       <ul>
-        <li>二到四個段落</li>
+        <li>將經文分成二到四個小段落</li>
         <li>僅陳述事實</li>
-        <li>將經文分成幾個小段落</li>
         <li>用完整的句子表達</li>
         <li>標注各段落涵蓋的經節</li>
       </ul>
@@ -1510,13 +1659,14 @@
   </div>
 
   <!-- STEP 3: TOPIC SENTENCE -->
-  <div class="step">
+  <div class="step" id="stepTopic" data-step-key="topic">
     <div class="step-head">
       <div class="step-num">III</div>
       <div class="step-head-text">
         <h2 class="step-title">主題句 <span class="step-en">Subject Sentence</span></h2>
         <div class="step-tagline">整段經文摘要 &middot; <span class="en">Passage summary</span></div>
       </div>
+      <button class="step-move-btn" data-step="topic" onclick="moveStep('topic')" title="移到左欄">⇐ 移到左欄</button>
     </div>
     <div class="hint">
       <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
@@ -1530,18 +1680,19 @@
     </div>
     <div class="topic-wrap">
       <textarea id="topic" class="topic-input" rows="2" placeholder="一句完整的句子（主詞＋動詞＋句點）濃縮及精簡這段經文⋯" oninput="updateTopicCounter(); save()"></textarea>
-      <div class="char-counter" id="topicCounter">0 字 &middot; 目標 10–25</div>
+      <div class="char-counter" id="topicCounter">0 個字 &middot; 目標 10–25 個字</div>
     </div>
   </div>
 
   <!-- STEP 4: MAIN IDEA -->
-  <div class="step">
+  <div class="step" id="stepAim" data-step-key="aim">
     <div class="step-head">
       <div class="step-num">IV</div>
       <div class="step-head-text">
         <h2 class="step-title">主旨 <span class="step-en">Aim</span></h2>
         <div class="step-tagline">主要真理或原則 &middot; <span class="en">Main truth or principle</span></div>
       </div>
+      <button class="step-move-btn" data-step="aim" onclick="moveStep('aim')" title="移到左欄">⇐ 移到左欄</button>
     </div>
     <div class="hint">
       <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
@@ -1549,7 +1700,7 @@
         <li>作者要闡明的主要真理</li>
         <li>貫穿整段經文</li>
         <li>教義正確</li>
-        <li>關於上帝或人</li>
+        <li>關於上帝或人或上帝與人</li>
       </ul>
     </div>
     <div class="main-idea-wrap">
@@ -1559,13 +1710,14 @@
   </div>
 
   <!-- STEP 5: APPLICATION -->
-  <div class="step">
+  <div class="step" id="stepApplications" data-step-key="applications">
     <div class="step-head">
       <div class="step-num">V</div>
       <div class="step-head-text">
         <h2 class="step-title">應用 <span class="step-en">Applications</span></h2>
         <div class="step-tagline">以問題激勵聽眾做出改變 &middot; <span class="en">Questions motivating change</span></div>
       </div>
+      <button class="step-move-btn" data-step="applications" onclick="moveStep('applications')" title="移到左欄">⇐ 移到左欄</button>
     </div>
     <div class="hint">
       <button class="hint-toggle" type="button" aria-expanded="true" onclick="toggleHint(this)"><strong>方法</strong><span class="hint-chevron" aria-hidden="true">▾</span></button>
@@ -1576,6 +1728,15 @@
         <li>注意均衡，考慮聽眾是誰</li>
       </ul>
     </div>
+    <!-- Mobile-only Divisions Reference -->
+    <div class="mobile-div-ref collapsed" id="mobileDivRef">
+      <button class="mobile-div-ref-toggle" type="button" onclick="toggleMobileDivRef(this)">
+        <span class="mdr-chevron" aria-hidden="true">▾</span>顯示分段參考
+      </button>
+      <div class="mobile-div-ref-body" id="mobileDivRefBody">
+        <span class="mdr-empty">尚未填寫分段</span>
+      </div>
+    </div>
     <div class="applications" id="applications"></div>
     <div style="display:flex; align-items:center; flex-wrap:wrap;">
       <button class="add-row" onclick="addApplication()">+ 加一個問題</button>
@@ -1583,7 +1744,7 @@
     </div>
   </div>
 
-  </div><!-- /.work-steps -->
+  </div><!-- /.col-right -->
   </div><!-- /.work-area -->
 
   <!-- LIVE SUMMARY -->
@@ -1910,6 +2071,9 @@
       if (!el.dataset.origTitle) el.dataset.origTitle = el.title;
       el.title = (lang === 'SC') ? toSC(el.dataset.origTitle) : el.dataset.origTitle;
     });
+    // Re-render move button text in the correct script (buttons set their own
+    // text via tx(), so a direct call is needed after the lang switch)
+    if (typeof updateMoveButtons === 'function') updateMoveButtons();
   }
 
   // ========== STATE ==========
@@ -2255,6 +2419,13 @@
 
     // Re-apply language to translate any newly-generated DOM
     applyLang(state.lang || 'TC');
+
+    // Update mobile divisions reference
+    updateMobileDivRef();
+
+    // Re-apply step column layout (render() rebuilds DOM, so steps may have
+    // been put back into colRight; reapply saved placement)
+    applyStepLayout();
   }
 
   function makeContentRow(item, idx) {
@@ -2389,9 +2560,7 @@
 
   // applyLayout() — toggles between 1-column and 2-column layouts.
   // 1-column: everything stacks vertically (default).
-  // 2-column: the Passage block becomes a sticky left rail while the user
-  // works through Steps I-V on the right. CSS does the heavy lifting via
-  // the .layout-2col class on <body>.
+  // 2-column: the left column is sticky; steps can be moved left/right.
   function applyLayout(layout) {
     state.layout = (layout === '2col') ? '2col' : '1col';
     document.body.classList.toggle('layout-2col', state.layout === '2col');
@@ -2401,6 +2570,9 @@
       const input = lbl.querySelector('input');
       if (input) input.checked = (lbl.dataset.layout === state.layout);
     });
+    // Apply step column placements
+    applyStepLayout();
+    updateMoveButtons();
   }
 
   // toggleHint() — flip the collapsed state of one 方法 hint box.
@@ -3006,34 +3178,44 @@
   function updateContentCounter() {
     const n = state.content.length;
     const el = document.getElementById('contentCounter');
-    el.textContent = tx(`${n} 項 · 建議 10–20`);
+    el.textContent = tx(`目前 ${n} 項 · 建議 10–20 項內容要點`);
     el.className = 'row-counter ' + (n >= 10 && n <= 20 ? 'ok' : (n > 0 ? 'warn' : ''));
   }
 
   function updateSectionCounter() {
     const n = state.sections.length;
     const el = document.getElementById('sectionCounter');
-    el.textContent = tx(`${n} 段 · 建議 2–4`);
+    el.textContent = tx(`目前 ${n} 段 · 建議 2–4 段`);
     el.className = 'row-counter ' + (n >= 2 && n <= 4 ? 'ok' : (n > 0 ? 'warn' : ''));
   }
 
-  function updateAppCounter() {
-    const n = state.applications.length;
-    const el = document.getElementById('appCounter');
+    function updateAppCounter() {
     const target = state.sections.length || 4;
-    el.textContent = tx(`${n} 題 · 每段一題（建議 ${target}）`);
-    el.className = 'row-counter ' + (n === target && n > 0 ? 'ok' : '');
-  }
+
+    const filled = state.applications.filter(app =>
+    app && app.trim().length > 0
+    ).length;
+
+    const el = document.getElementById('appCounter');
+
+   el.textContent = tx(`目前 ${filled} 題 · 每段一個問題 · 建議 ${target} 題`);
+
+   el.className = 'row-counter ' + (
+    filled === target && filled > 0 ? 'ok' : 'warn'
+  );
+}
+
 
   function updateTopicCounter() {
     const v = document.getElementById('topic').value;
     state.topic = v;
-    // Count Chinese characters: any non-whitespace character. Strip whitespace and punctuation.
+    // Count Chinese characters: strip whitespace and punctuation.
     const cleaned = v.replace(/\s+/g, '').replace(/[，。、；：！？「」『』（）()]/g, '');
     const n = [...cleaned].length;
     const el = document.getElementById('topicCounter');
-    el.textContent = tx(`${n} 字 · 目標 10–25`);
-    el.className = 'char-counter ' + (n >= 10 && n <= 25 ? 'ok' : (n > 0 ? 'warn' : ''));
+    el.textContent = tx(`目前 ${n} 字 · 目標 10–25 個字`);
+    // 0 chars → warn (red); 10-25 → ok (green); anything else → warn (red)
+    el.className = 'char-counter ' + (n >= 10 && n <= 25 ? 'ok' : 'warn');
   }
 
   // ========== SUMMARY ==========
@@ -3073,6 +3255,7 @@
     updateSectionCounter();
     updateAppCounter();
     updateRcuvLink();
+    updateMobileDivRef();
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => {
       // Persist ONLY UI preferences so each new session starts with a clean
@@ -3118,6 +3301,8 @@
     if (!state.content.length) state.content.push({ verse: '', text: '' });
     if (!state.sections.length) state.sections.push({ verses: '', summary: '' });
     if (!state.applications.length) state.applications.push('');
+    // Load step column layout from localStorage (separate from worksheet content)
+    loadStepLayout();
     render();
     applyLang(state.lang);
     applyLayout(state.layout);
@@ -3226,6 +3411,8 @@
         applyLayout(state.layout || '1col');
         applyHintCollapse();
         applyScriptureMode(state.scriptureMode || 'manual', { silent: true });
+        applyStepLayout();
+        updateMobileDivRef();
         save();
         toast(tx('已開啟'));
       } catch (err) {
@@ -3255,6 +3442,145 @@
     t.classList.add('show');
     clearTimeout(t._timer);
     t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  // ========== STEP COLUMN LAYOUT (Desktop 雙欄) ==========
+  const STEP_LAYOUT_KEY = 'bsf_step_layout_v1';
+
+  // Default: all steps in the right column
+  const DEFAULT_STEP_LAYOUT = {
+    content: 'right',
+    sections: 'right',
+    topic: 'right',
+    aim: 'right',
+    applications: 'right'
+  };
+
+  // stepLayout: maps step key → 'left' | 'right'
+  let stepLayout = Object.assign({}, DEFAULT_STEP_LAYOUT);
+
+  // Load step layout from localStorage
+  function loadStepLayout() {
+    try {
+      const raw = localStorage.getItem(STEP_LAYOUT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        stepLayout = Object.assign({}, DEFAULT_STEP_LAYOUT, parsed);
+      }
+    } catch (e) {}
+  }
+
+  // Save step layout to localStorage
+  function saveStepLayout() {
+    try {
+      localStorage.setItem(STEP_LAYOUT_KEY, JSON.stringify(stepLayout));
+    } catch (e) {}
+  }
+
+  // Apply saved step column placements to the DOM
+  function applyStepLayout() {
+    const colLeft = document.getElementById('colLeft');
+    const colRight = document.getElementById('colRight');
+    if (!colLeft || !colRight) return;
+
+    // Canonical order: steps are always arranged I → V within each column.
+    // Collect the step elements destined for each column in order, then
+    // re-append them so the DOM sequence is always I < II < III < IV < V
+    // regardless of the sequence in which the user moved them.
+    const stepKeys = ['content', 'sections', 'topic', 'aim', 'applications'];
+
+    const leftSteps  = [];
+    const rightSteps = [];
+
+    stepKeys.forEach(key => {
+      const el = document.getElementById(stepIdForKey(key));
+      if (!el) return;
+      if (stepLayout[key] === 'left') leftSteps.push(el);
+      else rightSteps.push(el);
+    });
+
+    // Append left-column steps in order after the passage box (which is
+    // always the first child of colLeft and never touched here).
+    leftSteps.forEach(el => colLeft.appendChild(el));
+
+    // Append right-column steps in order.
+    rightSteps.forEach(el => colRight.appendChild(el));
+
+    updateMoveButtons();
+  }
+
+  function stepIdForKey(key) {
+    const map = {
+      content: 'stepContent',
+      sections: 'stepSections',
+      topic: 'stepTopic',
+      aim: 'stepAim',
+      applications: 'stepApplications'
+    };
+    return map[key];
+  }
+
+  // Move a step between left and right columns
+  function moveStep(key) {
+    const currentCol = stepLayout[key] || 'right';
+    const newCol = (currentCol === 'right') ? 'left' : 'right';
+    stepLayout[key] = newCol;
+    applyStepLayout();
+    saveStepLayout();
+    // Re-apply lang to translate the newly moved DOM subtree
+    applyLang(state.lang || 'TC');
+    applyHintCollapse();
+  }
+
+  // Update move button text based on which column each step is in
+  function updateMoveButtons() {
+    document.querySelectorAll('.step-move-btn').forEach(btn => {
+      const key = btn.dataset.step;
+      if (!key) return;
+      const col = stepLayout[key] || 'right';
+      if (col === 'right') {
+        btn.textContent = tx('⇐ 移到左欄');
+        btn.title = tx('移到左欄');
+      } else {
+        btn.textContent = tx('移到右欄 ⇒');
+        btn.title = tx('移到右欄');
+      }
+    });
+  }
+
+  // ========== MOBILE DIVISIONS REFERENCE ==========
+
+  // Toggle the mobile divisions reference open/closed
+  function toggleMobileDivRef(btn) {
+    const ref = document.getElementById('mobileDivRef');
+    if (!ref) return;
+    const isCollapsed = ref.classList.toggle('collapsed');
+    const label = btn.querySelector('span:last-child') || btn;
+    // Update button text label (the text node after the chevron span)
+    const textNode = Array.from(btn.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+    if (textNode) {
+      textNode.textContent = isCollapsed ? '顯示分段參考' : '隱藏分段參考';
+    } else {
+      // Rebuild if needed
+      btn.lastChild.textContent = isCollapsed ? '顯示分段參考' : '隱藏分段參考';
+    }
+  }
+
+  // Update the mobile divisions reference body from current state.sections
+  function updateMobileDivRef() {
+    const body = document.getElementById('mobileDivRefBody');
+    if (!body) return;
+    const filled = state.sections.filter(s => s.verses || s.summary);
+    if (!filled.length) {
+      body.innerHTML = '<span class="mdr-empty">尚未填寫分段</span>';
+      return;
+    }
+    const items = filled.map((s, i) => {
+      const verses = escapeHtml(s.verses || '');
+      const summary = escapeHtml(s.summary || '');
+      return `<li><span class="mdr-verses">${verses}</span>${summary}</li>`;
+    }).join('');
+    body.innerHTML = `<ol>${items}</ol>`;
   }
 
   // ========== INIT ==========
