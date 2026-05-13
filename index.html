@@ -1395,6 +1395,8 @@
     line-height: 1;
   }
 
+  /* Open (default): chevron points down ▾ — no transform needed */
+  /* Collapsed: rotate to point right ▶ */
   .mobile-div-ref.collapsed .mdr-chevron {
     transform: rotate(-90deg);
   }
@@ -1730,8 +1732,7 @@
     </div>
     <!-- Mobile-only Divisions Reference -->
     <div class="mobile-div-ref collapsed" id="mobileDivRef">
-      <button class="mobile-div-ref-toggle" type="button" onclick="toggleMobileDivRef(this)">
-        <span class="mdr-chevron" aria-hidden="true">▾</span>顯示分段參考
+      <button class="mobile-div-ref-toggle" type="button" onclick="toggleMobileDivRef(this)">顯示分段參考<span class="mdr-chevron" aria-hidden="true">▾</span>
       </button>
       <div class="mobile-div-ref-body" id="mobileDivRefBody">
         <span class="mdr-empty">尚未填寫分段</span>
@@ -3555,14 +3556,11 @@
     const ref = document.getElementById('mobileDivRef');
     if (!ref) return;
     const isCollapsed = ref.classList.toggle('collapsed');
-    const label = btn.querySelector('span:last-child') || btn;
-    // Update button text label (the text node after the chevron span)
+    // The text node is the first child of the button (label comes before the chevron span)
     const textNode = Array.from(btn.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+    const label = isCollapsed ? tx('顯示分段參考') : tx('隱藏分段參考');
     if (textNode) {
-      textNode.textContent = isCollapsed ? '顯示分段參考' : '隱藏分段參考';
-    } else {
-      // Rebuild if needed
-      btn.lastChild.textContent = isCollapsed ? '顯示分段參考' : '隱藏分段參考';
+      textNode.textContent = label;
     }
   }
 
