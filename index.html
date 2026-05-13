@@ -1539,7 +1539,7 @@
       </div>
       <div class="layout-switcher" id="layoutSwitcher">
         <label data-layout="1col" class="active" title="單欄檢視"><input type="radio" name="layout" value="1col" checked>單欄</label>
-        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄</label>
+        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄 (PC)</label>
       </div>
     </div>
     <div class="toolbar">
@@ -1605,7 +1605,7 @@
 
   </div><!-- /.col-left -->
 
-  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄) -->
+  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄 (PC)) -->
   <div class="col-right" id="colRight">
 
   <!-- STEP 1: CONTENT -->
@@ -2956,7 +2956,7 @@
     });
     // Only dismiss on window-level scroll (not internal element scrolls).
     // Without this guard, the passage's own internal scroll (when it's
-    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
+    // position:fixed with overflow-y on mobile in 雙欄 (PC) mode) was firing and
     // nuking the popup's context — making it inconsistent whether a tap on
     // "加入內容列項" actually registered.
     window.addEventListener('scroll', () => {
@@ -3445,7 +3445,7 @@
     t._timer = setTimeout(() => t.classList.remove('show'), 1800);
   }
 
-  // ========== STEP COLUMN LAYOUT (Desktop 雙欄) ==========
+  // ========== STEP COLUMN LAYOUT (Desktop 雙欄 (PC)) ==========
   const STEP_LAYOUT_KEY = 'bsf_step_layout_v1';
 
   // Default: all steps in the right column
