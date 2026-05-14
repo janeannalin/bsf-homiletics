@@ -233,7 +233,7 @@
   .scripture-ref input {
     width: 100%;
     font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--ink);
     background: transparent;
@@ -242,6 +242,16 @@
     padding: 6px 4px;
     outline: none;
     letter-spacing: 0.05em;
+  }
+
+  /* Placeholder text: smaller, softer, wraps on narrow screens */
+  .scripture-ref input::placeholder {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   .scripture-ref input:focus {
@@ -1539,7 +1549,7 @@
       </div>
       <div class="layout-switcher" id="layoutSwitcher">
         <label data-layout="1col" class="active" title="單欄檢視"><input type="radio" name="layout" value="1col" checked>單欄</label>
-        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄 (PC)</label>
+        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄</label>
       </div>
     </div>
     <div class="toolbar">
@@ -1561,7 +1571,7 @@
         <label data-mode="bsf" title="自動載入本週 BSF 學習經文"><input type="radio" name="scrMode" value="bsf">本週 BSF</label>
       </div>
     </div>
-    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14   或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14　或簡稱「羅 13:8-14」　跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
@@ -1605,7 +1615,7 @@
 
   </div><!-- /.col-left -->
 
-  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄 (PC)) -->
+  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄) -->
   <div class="col-right" id="colRight">
 
   <!-- STEP 1: CONTENT -->
@@ -2956,7 +2966,7 @@
     });
     // Only dismiss on window-level scroll (not internal element scrolls).
     // Without this guard, the passage's own internal scroll (when it's
-    // position:fixed with overflow-y on mobile in 雙欄 (PC) mode) was firing and
+    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
     // nuking the popup's context — making it inconsistent whether a tap on
     // "加入內容列項" actually registered.
     window.addEventListener('scroll', () => {
@@ -3177,17 +3187,17 @@
 
   // ========== COUNTERS ==========
   function updateContentCounter() {
-    const n = state.content.length;
+    const filled = state.content.filter(c => c.text && c.text.trim().length > 0).length;
     const el = document.getElementById('contentCounter');
-    el.textContent = tx(`目前 ${n} 項 · 建議 10–20 項內容要點`);
-    el.className = 'row-counter ' + (n >= 10 && n <= 20 ? 'ok' : (n > 0 ? 'warn' : ''));
+    el.textContent = tx(`目前 ${filled} 項 · 建議 10–20 項內容要點`);
+    el.className = 'row-counter ' + (filled >= 10 && filled <= 20 ? 'ok' : 'warn');
   }
 
   function updateSectionCounter() {
-    const n = state.sections.length;
+    const filled = state.sections.filter(s => (s.verses && s.verses.trim().length > 0) || (s.summary && s.summary.trim().length > 0)).length;
     const el = document.getElementById('sectionCounter');
-    el.textContent = tx(`目前 ${n} 段 · 建議 2–4 段`);
-    el.className = 'row-counter ' + (n >= 2 && n <= 4 ? 'ok' : (n > 0 ? 'warn' : ''));
+    el.textContent = tx(`目前 ${filled} 段 · 建議 2–4 段`);
+    el.className = 'row-counter ' + (filled >= 2 && filled <= 4 ? 'ok' : 'warn');
   }
 
     function updateAppCounter() {
@@ -3445,7 +3455,7 @@
     t._timer = setTimeout(() => t.classList.remove('show'), 1800);
   }
 
-  // ========== STEP COLUMN LAYOUT (Desktop 雙欄 (PC)) ==========
+  // ========== STEP COLUMN LAYOUT (Desktop 雙欄) ==========
   const STEP_LAYOUT_KEY = 'bsf_step_layout_v1';
 
   // Default: all steps in the right column
