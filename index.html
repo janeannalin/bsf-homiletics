@@ -1174,14 +1174,10 @@
      the Chinese label/title at the left edge; column 2 holds the
      English subtitle/value, all starting at the same horizontal position. */
   .summary-card {
-    --summary-label-col: 88px;
+    --summary-label-col: 72px;
   }
 
   .summary-head {
-    display: grid;
-    grid-template-columns: var(--summary-label-col) 1fr;
-    column-gap: 18px;
-    align-items: baseline;
     margin-bottom: 22px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--rule-soft);
@@ -1193,7 +1189,8 @@
     font-size: 20px;
     letter-spacing: 0.14em;
     color: var(--accent);
-    margin: 0;
+    margin: 0 0 2px;
+    display: inline;
   }
 
   .summary-en {
@@ -1203,6 +1200,7 @@
     color: var(--muted);
     letter-spacing: 0.05em;
     font-weight: 400;
+    margin-left: 10px;
   }
 
   .summary-grid {
@@ -1219,9 +1217,9 @@
 
   .summary-label {
     font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     color: var(--accent);
     padding-top: 2px;
   }
@@ -1571,7 +1569,7 @@
         <label data-mode="bsf" title="自動載入本週 BSF 學習經文"><input type="radio" name="scrMode" value="bsf">本週 BSF</label>
       </div>
     </div>
-    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14　或簡稱「羅 13:8-14」　跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
