@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>經文分析 · BSF Homiletics</title>
+<title>經文分析 · Homiletics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -193,7 +193,7 @@
     margin-left: 6px;
   }
 
-  /* BSF / Manual mode toggle — sits next to the "經文 Scripture" title.
+  /* Scripture mode toggle — sits next to the "經文 Scripture" title.
      Styled to match .st-translation pills exactly (same background, padding, font). */
   .sr-mode {
     display: flex;
@@ -233,7 +233,7 @@
   .scripture-ref input {
     width: 100%;
     font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--ink);
     background: transparent;
@@ -242,6 +242,16 @@
     padding: 6px 4px;
     outline: none;
     letter-spacing: 0.05em;
+  }
+
+  /* Placeholder text: smaller, softer, wraps on narrow screens */
+  .scripture-ref input::placeholder {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+    white-space: normal;
+    overflow-wrap: break-word;
   }
 
   .scripture-ref input:focus {
@@ -1164,14 +1174,10 @@
      the Chinese label/title at the left edge; column 2 holds the
      English subtitle/value, all starting at the same horizontal position. */
   .summary-card {
-    --summary-label-col: 88px;
+    --summary-label-col: 72px;
   }
 
   .summary-head {
-    display: grid;
-    grid-template-columns: var(--summary-label-col) 1fr;
-    column-gap: 18px;
-    align-items: baseline;
     margin-bottom: 22px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--rule-soft);
@@ -1183,7 +1189,8 @@
     font-size: 20px;
     letter-spacing: 0.14em;
     color: var(--accent);
-    margin: 0;
+    margin: 0 0 2px;
+    display: inline;
   }
 
   .summary-en {
@@ -1193,6 +1200,7 @@
     color: var(--muted);
     letter-spacing: 0.05em;
     font-weight: 400;
+    margin-left: 10px;
   }
 
   .summary-grid {
@@ -1209,9 +1217,9 @@
 
   .summary-label {
     font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     color: var(--accent);
     padding-top: 2px;
   }
@@ -1529,7 +1537,7 @@
 <div class="shell">
 
   <header class="masthead">
-    <div class="eyebrow">Bible Study Fellowship · Homiletics</div>
+    <div class="eyebrow">Homiletics</div>
     <h1 class="title">經文分析</h1>
     <div class="subtitle">A worksheet for <span class="em">Scripture analysis</span> &mdash; Content, Divisions, Subject Sentence, Aim, Applications</div>
     <div class="switchers-row">
@@ -1539,7 +1547,7 @@
       </div>
       <div class="layout-switcher" id="layoutSwitcher">
         <label data-layout="1col" class="active" title="單欄檢視"><input type="radio" name="layout" value="1col" checked>單欄</label>
-        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄 (PC)</label>
+        <label data-layout="2col" title="雙欄檢視：經文 ⇄ 五步"><input type="radio" name="layout" value="2col">雙欄</label>
       </div>
     </div>
     <div class="toolbar">
@@ -1558,10 +1566,10 @@
       <h3 class="sr-title">經文 <span class="sr-en">Scripture</span></h3>
       <div class="sr-mode" id="scriptureMode">
         <label data-mode="manual" class="active" title="自行輸入經文"><input type="radio" name="scrMode" value="manual" checked>手動輸入</label>
-        <label data-mode="bsf" title="自動載入本週 BSF 學習經文"><input type="radio" name="scrMode" value="bsf">本週 BSF</label>
+        <label data-mode="bsf" title="自動載入本週學習經文"><input type="radio" name="scrMode" value="bsf">本週經文</label>
       </div>
     </div>
-    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14   或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
@@ -1605,7 +1613,7 @@
 
   </div><!-- /.col-left -->
 
-  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄 (PC)) -->
+  <!-- RIGHT COLUMN: steps (each movable to left on desktop 雙欄) -->
   <div class="col-right" id="colRight">
 
   <!-- STEP 1: CONTENT -->
@@ -1779,7 +1787,7 @@
   </div>
 
   <footer class="colophon">
-    Bible Study Fellowship &middot; S 106 Homiletics &middot; Adapted as an interactive worksheet
+    S 106 Homiletics &middot; Adapted as an interactive worksheet
   </footer>
 
 </div>
@@ -1794,7 +1802,7 @@
     typeof window.storage !== 'undefined' &&
     typeof window.storage.set === 'function';
 
-  const STORAGE_KEY = 'bsf_homiletics_v1';
+  const STORAGE_KEY = 'homiletics_v1';
 
   async function storageSet(key, value) {
     if (hasClaudeStorage) {
@@ -1838,7 +1846,7 @@
     '騙':'骗','鬆':'松','鬱':'郁','鬥':'斗','魚':'鱼','鳥':'鸟','鳴':'鸣','鵝':'鹅',
     '鶴':'鹤','鷹':'鹰','黨':'党','齊':'齐','齒':'齿','龍':'龙',
 
-    // More common chars in BSF/UI text
+    // More common chars in UI text
     '訂':'订','詢':'询','試':'试','詳':'详','許':'许','設':'设','訪':'访','訴':'诉',
     '誌':'志','誇':'夸','誤':'误','誘':'诱','諸':'诸','諾':'诺','謀':'谋','謊':'谎',
     '謂':'谓','講':'讲','謝':'谢','謹':'谨','證':'证','譜':'谱','譯':'译','護':'护',
@@ -2244,14 +2252,12 @@
     64:'3JN',65:'JUD',66:'REV'
   };
 
-  // ===== BSF weekly schedule =====
-  // BSF studies run roughly Sept – April (30 weeks) with a Christmas break.
+  // ===== Weekly schedule =====
+  // Studies run roughly Sept – April (30 weeks) with a Christmas break.
   // The schedule below covers the announced 2026-2027 study (Romans: From
-  // Guilt to Grace) and is a best-effort projection based on the prior
-  // Romans study (2017-2018), updated as BSF publishes the official one.
-  // The "週經文" field is the homiletics passage for that lesson — the
-  // larger passage the student analyzes through the 5-step method.
-  const BSF_SCHEDULES = [
+  // Guilt to Grace). The "週經文" field is the homiletics passage for that
+  // lesson — the larger passage the student analyzes through the 5-step method.
+  const STUDY_SCHEDULES = [
     {
       name: 'Romans: From Guilt to Grace',
       nameTC: '羅馬書：從罪到恩',
@@ -2291,12 +2297,12 @@
   ];
 
   // Look up the homiletics passage scheduled for today (or the most recent
-  // Sunday) in the active BSF study year. Returns either a TC reference
-  // string (e.g. "羅馬書 13:8-14") or null if BSF is on break / between studies.
+  // Sunday) in the active study year. Returns either a TC reference
+  // string (e.g. "羅馬書 13:8-14") or null if on break / between studies.
   function getBsfPassageForToday() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    for (const study of BSF_SCHEDULES) {
+    for (const study of STUDY_SCHEDULES) {
       const start = new Date(study.startDate);
       start.setHours(0, 0, 0, 0);
       const dayMs = 24 * 60 * 60 * 1000;
@@ -2309,8 +2315,8 @@
     return null;
   }
 
-  // applyScriptureMode() — set the Scripture-input mode (manual vs. BSF auto).
-  // When the user selects "本週 BSF", we look up today's lesson passage and
+  // applyScriptureMode() — set the Scripture-input mode (manual vs. auto).
+  // When the user selects "本週經文", we look up today's lesson passage and
   // load it into the Scripture field. When manual, no automatic action.
   function applyScriptureMode(mode, opts) {
     opts = opts || {};
@@ -2324,11 +2330,11 @@
     if (state.scriptureMode === 'bsf' && !opts.silent) {
       const result = getBsfPassageForToday();
       if (!result) {
-        toast(tx('目前在 BSF 暑期休假中（下個學年從 2026 年 9 月 7 日開始：羅馬書）'));
+        toast(tx('目前在暑期休假中（下個學年從 2026 年 9 月 7 日開始：羅馬書）'));
         return;
       }
       if (!result.passage) {
-        toast(tx('本週為 BSF 假期（聖誕／新年休假），下週恢復'));
+        toast(tx('本週為假期（聖誕／新年休假），下週恢復'));
         return;
       }
       // Load the passage. In SC mode, convert to simplified.
@@ -2340,7 +2346,7 @@
       onScriptureInput();
       // Auto-fetch the verses
       try { loadVerses(); } catch (e) {}
-      toast(tx('已載入本週 BSF 經文：') + ref);
+      toast(tx('已載入本週經文：') + ref);
     }
   }
 
@@ -2956,7 +2962,7 @@
     });
     // Only dismiss on window-level scroll (not internal element scrolls).
     // Without this guard, the passage's own internal scroll (when it's
-    // position:fixed with overflow-y on mobile in 雙欄 (PC) mode) was firing and
+    // position:fixed with overflow-y on mobile in 雙欄 mode) was firing and
     // nuking the popup's context — making it inconsistent whether a tap on
     // "加入內容列項" actually registered.
     window.addEventListener('scroll', () => {
@@ -3177,17 +3183,17 @@
 
   // ========== COUNTERS ==========
   function updateContentCounter() {
-    const n = state.content.length;
+    const filled = state.content.filter(c => c.text && c.text.trim().length > 0).length;
     const el = document.getElementById('contentCounter');
-    el.textContent = tx(`目前 ${n} 項 · 建議 10–20 項內容要點`);
-    el.className = 'row-counter ' + (n >= 10 && n <= 20 ? 'ok' : (n > 0 ? 'warn' : ''));
+    el.textContent = tx(`目前 ${filled} 項 · 建議 10–20 項內容要點`);
+    el.className = 'row-counter ' + (filled >= 10 && filled <= 20 ? 'ok' : 'warn');
   }
 
   function updateSectionCounter() {
-    const n = state.sections.length;
+    const filled = state.sections.filter(s => (s.verses && s.verses.trim().length > 0) || (s.summary && s.summary.trim().length > 0)).length;
     const el = document.getElementById('sectionCounter');
-    el.textContent = tx(`目前 ${n} 段 · 建議 2–4 段`);
-    el.className = 'row-counter ' + (n >= 2 && n <= 4 ? 'ok' : (n > 0 ? 'warn' : ''));
+    el.textContent = tx(`目前 ${filled} 段 · 建議 2–4 段`);
+    el.className = 'row-counter ' + (filled >= 2 && filled <= 4 ? 'ok' : 'warn');
   }
 
     function updateAppCounter() {
@@ -3308,9 +3314,9 @@
     applyLang(state.lang);
     applyLayout(state.layout);
     applyHintCollapse();
-    // If the user previously had BSF auto-load enabled, restore that visual
+    // If the user previously had auto-load enabled, restore that visual
     // state — but DO NOT auto-fill the Scripture field. They can re-click
-    // "本週 BSF" if they want today's passage. This keeps the "empty sheet"
+    // "本週經文" if they want today's passage. This keeps the "empty sheet"
     // starting state honest.
     applyScriptureMode(state.scriptureMode, { silent: true });
   }
@@ -3325,8 +3331,8 @@
     state.lang = currentLang;
     state.layout = currentLayout;
     state.hintsCollapsed = currentHints;
-    // Loading the example overrides BSF auto-mode; revert to manual so the
-    // example's scripture isn't immediately overwritten by today's BSF passage.
+    // Loading the example overrides auto-mode; revert to manual so the
+    // example's scripture isn't immediately overwritten by today's passage.
     state.scriptureMode = 'manual';
     // The EXAMPLE strings are stored in Traditional Chinese (canonical form).
     // If the user is in Simplified mode, convert all user-facing content fields
@@ -3445,8 +3451,8 @@
     t._timer = setTimeout(() => t.classList.remove('show'), 1800);
   }
 
-  // ========== STEP COLUMN LAYOUT (Desktop 雙欄 (PC)) ==========
-  const STEP_LAYOUT_KEY = 'bsf_step_layout_v1';
+  // ========== STEP COLUMN LAYOUT (Desktop 雙欄) ==========
+  const STEP_LAYOUT_KEY = 'homiletics_step_layout_v1';
 
   // Default: all steps in the right column
   const DEFAULT_STEP_LAYOUT = {
