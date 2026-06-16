@@ -355,11 +355,70 @@
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .st-actions .btn {
     padding: 8px 14px;
     font-size: 12px;
+  }
+
+  /* 讀取經文 — prominent load button */
+  .btn-load {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 9px 20px 9px 16px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 var(--accent-deep), 0 4px 12px rgba(45,74,62,0.25);
+    transition: all 0.15s ease;
+    position: relative;
+    top: 0;
+  }
+
+  .btn-load:hover {
+    background: var(--accent-soft);
+    box-shadow: 0 2px 0 var(--accent-deep), 0 6px 16px rgba(45,74,62,0.32);
+    top: -1px;
+  }
+
+  .btn-load:active {
+    top: 1px;
+    box-shadow: 0 1px 0 var(--accent-deep), 0 2px 6px rgba(45,74,62,0.2);
+  }
+
+  .btn-load-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 3px;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1;
+    font-family: monospace;
+    flex-shrink: 0;
+  }
+
+  /* Pulse animation on the load button when scripture field has content
+     but passage hasn't been loaded yet */
+  @keyframes btn-pulse {
+    0%, 100% { box-shadow: 0 2px 0 var(--accent-deep), 0 4px 12px rgba(45,74,62,0.25); }
+    50%       { box-shadow: 0 2px 0 var(--accent-deep), 0 4px 20px rgba(45,74,62,0.50), 0 0 0 4px rgba(45,74,62,0.12); }
+  }
+
+  .btn-load.pulse {
+    animation: btn-pulse 1.6s ease-in-out infinite;
   }
 
   .st-rcuv-notice {
@@ -545,6 +604,85 @@
   .content-row.from-highlight .verse-input {
     background: linear-gradient(180deg, transparent 0%, transparent 70%, #F5DC8E 70%, #F5DC8E 100%);
     color: var(--accent);
+  }
+
+  /* Inline bold-red emphasis span inside contenteditable content rows */
+  .content-input .emph {
+    color: #B85C2E;
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 1.5px solid #E8A87A;
+    padding-bottom: 0px;
+  }
+
+  .content-input .emph:hover {
+    background: #FCE8DB;
+    border-radius: 2px;
+  }
+
+  /* Highlighter pen button */
+  .row-emphasize {
+    width: 28px;
+    height: 42px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .row-emphasize:hover {
+    background: #FEF0E8;
+    border-color: #E8C9B5;
+  }
+
+  .row-emphasize svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.15s ease;
+  }
+
+  .row-emphasize:hover svg {
+    stroke: #B85C2E;
+  }
+
+  /* contenteditable content-input: match old textarea look exactly */
+  div.content-input {
+    flex: 1;
+    padding: 10px 14px;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    outline: none;
+    line-height: 1.6;
+    min-height: 42px;
+    word-break: break-all;
+    white-space: pre-wrap;
+    cursor: text;
+  }
+
+  div.content-input:focus {
+    border-color: var(--accent);
+  }
+
+  div.content-input:empty::before {
+    content: attr(data-placeholder);
+    color: var(--muted);
+    pointer-events: none;
   }
 
   .st-edit {
@@ -1569,7 +1707,7 @@
         <label data-mode="bsf" title="自動載入本週學習經文"><input type="radio" name="scrMode" value="bsf">本週經文</label>
       </div>
     </div>
-    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()">
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();loadVerses();}">
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
@@ -1594,7 +1732,7 @@
         </div>
       </div>
       <div class="st-actions">
-        <button class="btn primary" id="btnLoad" onclick="loadVerses()">讀取經文</button>
+        <button class="btn-load" id="btnLoad" onclick="loadVerses()"><span class="btn-load-icon">↵</span>讀取經文</button>
         <button class="btn" onclick="toggleEdit()" id="btnEdit">✎ 編輯</button>
       </div>
     </div>
@@ -2442,29 +2580,112 @@
     const verseTitle = item.fromHighlight ? '由經文標記自動填入（可手動修改）' : '輸入經節';
     row.innerHTML = `
       <input class="verse-input" type="text" placeholder="節" title="${verseTitle}" value="${escapeAttr(item.verse || '')}" data-idx="${idx}" data-field="verse">
-      <textarea class="content-input" rows="1" placeholder="這段經文說什麼？列出經文中主題、事件或經文細節，不必是完整句子⋯" data-idx="${idx}" data-field="text">${escapeHtml(item.text || '')}</textarea>
+      <div class="content-input" contenteditable="true" data-placeholder="這段經文說什麼？列出經文中主題、事件或經文細節，不必是完整句子⋯" data-idx="${idx}" data-field="text">${item.text || ''}</div>
       <div class="row-move">
         <button type="button" title="上移" onclick="moveContent(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
         <button type="button" title="下移" onclick="moveContent(${idx}, 1)" ${idx === total - 1 ? 'disabled' : ''}>▼</button>
       </div>
+      <button class="row-emphasize" type="button" title="選取文字後點此，將選取文字標為粗體紅字；點擊紅字可取消" onclick="applyEmphasis(${idx})"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 19H5"/><path d="m15 5-8.5 8.5L5 19l5.5-1.5L19 9l-4-4z"/><path d="m15 5 4 4"/><path d="M11.5 7.5 16 12"/></svg></button>
       <button class="row-remove" title="刪除此行" onclick="removeContent(${idx})">×</button>
     `;
-    row.querySelectorAll('input.verse-input, textarea.content-input').forEach(el => {
-      el.addEventListener('input', (e) => {
-        const i = +e.target.dataset.idx;
-        const f = e.target.dataset.field;
-        state.content[i][f] = e.target.value;
-        if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
-        // If user edits a highlight-derived row's text, re-render passage so highlight stays in sync
-        if (state.content[i].fromHighlight) renderPassage();
-        save();
-      });
-      if (el.tagName === 'TEXTAREA') {
-        // Auto-resize on render
-        setTimeout(() => autoResize(el), 0);
-      }
+    // Verse input
+    const verseEl = row.querySelector('input.verse-input');
+    verseEl.addEventListener('input', (e) => {
+      const i = +e.target.dataset.idx;
+      state.content[i].verse = e.target.value;
+      save();
+    });
+
+    // Contenteditable content div
+    const contentEl = row.querySelector('div.content-input');
+    contentEl.addEventListener('input', (e) => {
+      const i = +e.target.dataset.idx;
+      state.content[i].text = e.target.innerHTML;
+      if (state.content[i].fromHighlight) renderPassage();
+      save();
+    });
+
+    // Click on an existing .emph span → unwrap (remove emphasis)
+    contentEl.addEventListener('click', (e) => {
+      const span = e.target.closest('.emph');
+      if (!span) return;
+      const i = +contentEl.dataset.idx;
+      // Replace span with its text content
+      const text = document.createTextNode(span.textContent);
+      span.parentNode.replaceChild(text, span);
+      state.content[i].text = contentEl.innerHTML;
+      save();
     });
     return row;
+  }
+
+  // Each .row-emphasize button stores its saved range here (set on mousedown)
+  // so that clicking the button doesn't lose the selection from the contenteditable.
+  const _savedRanges = new WeakMap();
+
+  // Call this once after the DOM exists — wires mousedown on all current and
+  // future emphasize buttons via delegation.
+  function setupEmphasisHandlers() {
+    document.getElementById('contentRows').addEventListener('mousedown', (e) => {
+      const btn = e.target.closest('.row-emphasize');
+      if (!btn) return;
+      // Capture the live selection range BEFORE the click steals focus
+      const sel = window.getSelection();
+      if (sel && !sel.isCollapsed) {
+        _savedRanges.set(btn, sel.getRangeAt(0).cloneRange());
+      } else {
+        _savedRanges.delete(btn);
+      }
+      // Prevent focus shift so the contenteditable keeps its selection visible
+      e.preventDefault();
+    });
+  }
+
+  // Apply bold-red emphasis to the saved (or live) selection inside a content row
+  function applyEmphasis(idx) {
+    const rows = document.querySelectorAll('#contentRows .content-row');
+    const row = rows[idx];
+    if (!row) return;
+    const contentEl = row.querySelector('div.content-input');
+    if (!contentEl) return;
+    const btn = row.querySelector('.row-emphasize');
+
+    // Use saved range (captured on mousedown) or fall back to live selection
+    let range = btn ? _savedRanges.get(btn) : null;
+    if (!range) {
+      const sel = window.getSelection();
+      if (sel && !sel.isCollapsed && contentEl.contains(sel.anchorNode)) {
+        range = sel.getRangeAt(0).cloneRange();
+      }
+    }
+    if (btn) _savedRanges.delete(btn);
+
+    if (!range || !contentEl.contains(range.commonAncestorContainer)) {
+      // No valid selection — flash button border red as a hint
+      if (btn) {
+        btn.style.outline = '2px solid #B85C2E';
+        btn.style.outlineOffset = '1px';
+        setTimeout(() => { btn.style.outline = ''; btn.style.outlineOffset = ''; }, 700);
+      }
+      return;
+    }
+
+    // Wrap selected text in <span class="emph">
+    const span = document.createElement('span');
+    span.className = 'emph';
+    try {
+      range.surroundContents(span);
+    } catch (e) {
+      // surroundContents fails if selection crosses element boundaries
+      const frag = range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+    }
+    window.getSelection().removeAllRanges();
+
+    state.content[idx].text = contentEl.innerHTML;
+    if (state.content[idx].fromHighlight) renderPassage();
+    save();
   }
 
   // Reorder a content row up (-1) or down (+1)
@@ -2523,6 +2744,15 @@
   // ========== SCRIPTURE TEXT (passage fetching & display) ==========
   function onScriptureInput() {
     state.scripture = document.getElementById('scripture').value;
+    // Pulse the load button when there's a ref typed but no passage loaded yet
+    const btnLoad = document.getElementById('btnLoad');
+    if (btnLoad) {
+      if (state.scripture.trim() && !state.passageEditable) {
+        btnLoad.classList.add('pulse');
+      } else {
+        btnLoad.classList.remove('pulse');
+      }
+    }
     save();
   }
 
@@ -2780,6 +3010,8 @@
       document.getElementById('stEdit').value = plainText;
       updateAttribution();
       save();
+      const btnLoad = document.getElementById('btnLoad');
+      if (btnLoad) btnLoad.classList.remove('pulse');
       toast(tx('已讀取經文'));
     } catch (err) {
       console.error(err);
@@ -3073,7 +3305,7 @@
       if (!existing.highlights) existing.highlights = existing.text ? [existing.text] : [];
       // Avoid duplicates of the exact same phrase
       if (!existing.highlights.includes(text)) {
-        const wasInSync = existing.text === existing.highlights.join('，');
+        const wasInSync = stripEmph(existing.text) === existing.highlights.join('，');
         existing.highlights.push(text);
         if (wasInSync) {
           // Keep text in sync with highlights array
@@ -3109,12 +3341,12 @@
       // No highlights array (legacy) — remove the whole row
       state.content.splice(idx, 1);
     } else {
-      const wasInSync = row.text === row.highlights.join('，');
+      const wasInSync = stripEmph(row.text) === row.highlights.join('，');
       row.highlights.splice(hlIdx, 1);
 
       if (row.highlights.length === 0) {
         // No more highlights left
-        if (wasInSync || !row.text.trim()) {
+        if (wasInSync || !stripEmph(row.text).trim()) {
           // Text was auto-synced or empty — remove the whole row
           state.content.splice(idx, 1);
         } else {
@@ -3183,7 +3415,7 @@
 
   // ========== COUNTERS ==========
   function updateContentCounter() {
-    const filled = state.content.filter(c => c.text && c.text.trim().length > 0).length;
+    const filled = state.content.filter(c => c.text && stripEmph(c.text).trim().length > 0).length;
     const el = document.getElementById('contentCounter');
     el.textContent = tx(`目前 ${filled} 項 · 建議 10–20 項內容要點`);
     el.className = 'row-counter ' + (filled >= 10 && filled <= 20 ? 'ok' : 'warn');
@@ -3431,6 +3663,13 @@
   }
 
   // ========== HELPERS ==========
+  // Strip <span class="emph"> tags (and any other HTML) to get plain text
+  // Used for counters and highlight-sync that need the raw string
+  function stripEmph(html) {
+    if (!html) return '';
+    return html.replace(/<[^>]+>/g, '');
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -3589,6 +3828,7 @@
 
   // ========== INIT ==========
   setupHighlightHandlers();
+  setupEmphasisHandlers();
   load();
 </script>
 </body>
