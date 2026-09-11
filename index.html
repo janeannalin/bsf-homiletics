@@ -21,6 +21,8 @@
     --rule: #D9CDB7;
     --rule-soft: #E8DFCB;
     --highlight: #B85C2E;
+    --burgundy: #6E1423;
+    --burgundy-deep: #4E0E19;
     --shadow: 0 1px 0 rgba(30,26,20,0.04), 0 8px 24px -12px rgba(30,26,20,0.12);
     --shadow-lift: 0 1px 0 rgba(30,26,20,0.06), 0 18px 36px -16px rgba(30,26,20,0.2);
   }
@@ -1408,6 +1410,15 @@
     transform: translateX(-50%) translateY(0);
   }
 
+  /* Burgundy variant — used for the weekly-passage (本週經文) notices so
+     they stand out from routine confirmations. */
+  .toast.toast-burgundy {
+    background: var(--burgundy);
+    color: var(--paper);
+    box-shadow: 0 1px 0 rgba(78,14,25,0.3), 0 18px 36px -16px rgba(78,14,25,0.45);
+    border: 1px solid var(--burgundy-deep);
+  }
+
   /* === FOOTER === */
   footer.colophon {
     text-align: center;
@@ -2391,52 +2402,67 @@
   };
 
   // ===== Weekly schedule =====
-  // Studies run roughly Sept – April (30 weeks) with a Christmas break.
-  // The schedule below covers the announced 2026-2027 study (Romans: From
-  // Guilt to Grace). The "週經文" field is the homiletics passage for that
-  // lesson — the larger passage the student analyzes through the 5-step method.
+  // Source: "2026-2027 (羅馬書) 五餅二魚班同工會行事曆" (Anna's uploaded calendar).
+  // Meets Monday nights, U.S. Eastern time. Each entry is one calendar week
+  // (Monday date shown), in order, with no gaps — so week index === array
+  // index once startDate is anchored to the first Monday (Sep 14, 2026).
+  //
+  // Each entry: { label: <lesson name in TC>, ref: <TC Scripture reference
+  // for "本週經文", or null>, holiday: true if it's a scheduled off-week }.
+  //
+  // NOTE: the calendar's "第5課" row lists "Romans 3:31-26", which is not a
+  // valid verse range (31 before 26). Given lesson 4 covers 3:1-20 and
+  // lesson 6 covers 3:27-31, this has been corrected to 3:21-26 — please
+  // double-check against the original calendar/leader's guide.
   const STUDY_SCHEDULES = [
     {
       name: 'Romans: From Guilt to Grace',
       nameTC: '羅馬書：從罪到恩',
-      // Monday after U.S. Labor Day 2026.
-      startDate: '2026-09-07',
-      // Each entry is the homiletics passage in TC. null = scheduled break (no class).
-      // Order maps to weeks since startDate (week 0 = first week).
+      startDate: '2026-09-14', // Mon, Sep 14, 2026 — first class (導言)
       weeks: [
-        '羅馬書 1:1-17',      // 1: Intro
-        '羅馬書 1:18-32',     // 2
-        '羅馬書 2',           // 3
-        '羅馬書 3:1-20',      // 4
-        '羅馬書 3:21-31',     // 5
-        '羅馬書 4',           // 6
-        '羅馬書 5',           // 7
-        '羅馬書 6',           // 8
-        '羅馬書 7',           // 9
-        '羅馬書 8:1-17',      // 10
-        '羅馬書 8:18-39',     // 11
-        '羅馬書 9',           // 12
-        null,                 // Christmas break
-        null,                 // New Year break
-        '羅馬書 10',          // 13 (calendar week 15)
-        '羅馬書 11',          // 14
-        '羅馬書 12:1-8',      // 15
-        '羅馬書 12:9-21',     // 16
-        '羅馬書 13:1-7',      // 17
-        '羅馬書 13:8-14',     // 18
-        '羅馬書 14:1-12',     // 19
-        '羅馬書 14:13-15:7',  // 20
-        '羅馬書 15:8-21',     // 21
-        '羅馬書 15:22-33',    // 22
-        '羅馬書 16:1-16',     // 23
-        '羅馬書 16:17-27',    // 24
+        { label: '導言',   ref: null },                     // Sep 14, 2026 — Overview
+        { label: '第1課',  ref: '羅馬書 1:1-17' },           // Sep 21, 2026
+        { label: '第2課',  ref: '羅馬書 1:18-32' },          // Sep 28, 2026
+        { label: '第3課',  ref: '羅馬書 2' },                // Oct 5, 2026
+        { label: '第4課',  ref: '羅馬書 3:1-20' },           // Oct 12, 2026
+        { label: '第5課',  ref: '羅馬書 3:21-26' },          // Oct 19, 2026 (corrected, see note above)
+        { label: '第6課',  ref: '羅馬書 3:27-31' },          // Oct 26, 2026
+        { label: '第7課',  ref: '羅馬書 4' },                // Nov 2, 2026
+        { label: '第8課',  ref: '羅馬書 5:1-11' },           // Nov 9, 2026
+        { label: '第9課',  ref: '羅馬書 5:12-21' },          // Nov 16, 2026
+        { label: '第10課', ref: '羅馬書 6:1-11' },           // Nov 23, 2026
+        { label: '第11課', ref: '羅馬書 6:12-23' },          // Nov 30, 2026
+        { label: '第12課', ref: '羅馬書 7' },                // Dec 7, 2026
+        { label: '第13課', ref: '羅馬書 8:1-17' },           // Dec 14, 2026
+        { label: '聖誕假期', ref: null, holiday: true },     // Dec 21, 2026
+        { label: '聖誕假期', ref: null, holiday: true },     // Dec 28, 2026
+        { label: '聖誕假期', ref: null, holiday: true },     // Jan 4, 2027
+        { label: '第14課', ref: '羅馬書 8:18-27' },          // Jan 11, 2027
+        { label: '第15課', ref: '羅馬書 8:28-39' },          // Jan 18, 2027
+        { label: '第16課', ref: '羅馬書 9:1-29' },           // Jan 25, 2027
+        { label: '第17課', ref: '羅馬書 9:30-10:13' },       // Feb 1, 2027
+        { label: '第18課', ref: '羅馬書 10:14-21' },         // Feb 8, 2027
+        { label: '第19課', ref: '羅馬書 11:1-32' },          // Feb 15, 2027
+        { label: '第20課', ref: '羅馬書 11:33-36' },         // Feb 22, 2027
+        { label: '第21課', ref: '羅馬書 12:1-8' },           // Mar 1, 2027
+        { label: '第22課', ref: '羅馬書 12:9-21' },          // Mar 8, 2027
+        { label: '第23課', ref: '羅馬書 13:1-7' },           // Mar 15, 2027
+        { label: '第24課', ref: '羅馬書 13:8-14' },          // Mar 22, 2027
+        { label: '復活節假期', ref: null, holiday: true },   // Mar 29, 2027
+        { label: '第25課', ref: '羅馬書 14' },               // Apr 5, 2027
+        { label: '第26課', ref: '羅馬書 15:1-13' },          // Apr 12, 2027
+        { label: '第27課', ref: '羅馬書 15:14-33' },         // Apr 19, 2027
+        { label: '第28課', ref: '羅馬書 16' },               // Apr 26, 2027
+        { label: '第29課', ref: null },                      // May 3, 2027 — Summary
+        { label: '分享日', ref: null, holiday: true },       // May 10, 2027
       ]
     }
   ];
 
   // Look up the homiletics passage scheduled for today (or the most recent
-  // Sunday) in the active study year. Returns either a TC reference
-  // string (e.g. "羅馬書 13:8-14") or null if on break / between studies.
+  // Monday) in the active study year. Returns { entry, study, weekIdx }
+  // where entry = { label, ref, holiday? } — or null if before/after the
+  // whole study's date range.
   function getBsfPassageForToday() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -2448,7 +2474,7 @@
       if (diffDays < 0) continue; // study hasn't started yet
       const weekIdx = Math.floor(diffDays / 7);
       if (weekIdx >= study.weeks.length) continue; // past end of study
-      return { passage: study.weeks[weekIdx], study: study, weekIdx: weekIdx };
+      return { entry: study.weeks[weekIdx], study: study, weekIdx: weekIdx };
     }
     return null;
   }
@@ -2467,16 +2493,24 @@
     });
     if (state.scriptureMode === 'bsf' && !opts.silent) {
       const result = getBsfPassageForToday();
+      const scheduleToastOpts = { burgundy: true, duration: 4500 };
       if (!result) {
-        toast(tx('目前在暑期休假中（下個學年從 2026 年 9 月 7 日開始：羅馬書）'));
+        toast(tx('目前不在本學年上課期間內（2026-2027 學年從 2026 年 9 月 14 日開始：羅馬書）'), scheduleToastOpts);
         return;
       }
-      if (!result.passage) {
-        toast(tx('本週為假期（聖誕／新年休假），下週恢復'));
+      const entry = result.entry;
+      if (!entry || !entry.ref) {
+        if (entry && entry.holiday) {
+          toast(tx('本週為假期（') + tx(entry.label) + tx('），暫停上課'), scheduleToastOpts);
+        } else if (entry) {
+          toast(tx('本週（') + tx(entry.label) + tx('）沒有指定的分析經文'), scheduleToastOpts);
+        } else {
+          toast(tx('本週為假期，下週恢復'), scheduleToastOpts);
+        }
         return;
       }
       // Load the passage. In SC mode, convert to simplified.
-      let ref = result.passage;
+      let ref = entry.ref;
       if (state.lang === 'SC') ref = toSC(ref);
       state.scripture = ref;
       const inputEl = document.getElementById('scripture');
@@ -2484,7 +2518,7 @@
       onScriptureInput();
       // Auto-fetch the verses
       try { loadVerses(); } catch (e) {}
-      toast(tx('已載入本週經文：') + ref);
+      toast(tx('已載入本週經文（') + tx(entry.label) + tx('）：') + ref, scheduleToastOpts);
     }
   }
 
@@ -3682,12 +3716,14 @@
     return map[n - 1] || n;
   }
 
-  function toast(msg) {
+  function toast(msg, opts) {
+    opts = opts || {};
     const t = document.getElementById('toast');
     t.textContent = msg;
+    t.classList.toggle('toast-burgundy', !!opts.burgundy);
     t.classList.add('show');
     clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+    t._timer = setTimeout(() => t.classList.remove('show'), opts.duration || 1800);
   }
 
   // ========== STEP COLUMN LAYOUT (Desktop 雙欄) ==========
