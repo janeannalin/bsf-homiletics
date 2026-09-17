@@ -261,6 +261,27 @@
     border-bottom-style: solid;
   }
 
+  /* Lesson dropdown — shown instead of/alongside the manual text input when
+     "選擇課程" mode is active. Styled to match the scripture text input. */
+  .lesson-select {
+    width: 100%;
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--bg-2);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 8px 10px;
+    outline: none;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+  }
+
+  .lesson-select:focus {
+    border-color: var(--accent);
+  }
+
   /* === SCRIPTURE TEXT BLOCK === */
   .scripture-text {
     background: var(--paper);
@@ -1410,7 +1431,7 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Burgundy variant — used for the weekly-passage (本週經文) notices so
+  /* Burgundy variant — used for the lesson-selection (選擇課程) notices so
      they stand out from routine confirmations. */
   .toast.toast-burgundy {
     background: var(--burgundy);
@@ -1715,10 +1736,13 @@
       <h3 class="sr-title">經文 <span class="sr-en">Scripture</span></h3>
       <div class="sr-mode" id="scriptureMode">
         <label data-mode="manual" class="active" title="自行輸入經文"><input type="radio" name="scrMode" value="manual" checked>手動輸入</label>
-        <label data-mode="bsf" title="自動載入本週學習經文"><input type="radio" name="scrMode" value="bsf">本週經文</label>
+        <label data-mode="lesson" title="依課程選擇經文"><input type="radio" name="scrMode" value="lesson">選擇課程</label>
       </div>
     </div>
-    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或跨章節：羅馬書 13:8-14:5" oninput="onScriptureInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();loadVerses();}">
+    <select id="lessonSelect" class="lesson-select" style="display:none" onchange="onLessonSelect(this.value)">
+      <option value="">－－ 請選擇課程 －－</option>
+    </select>
+    <input id="scripture" type="text" placeholder="例：羅馬書 13:8-14 或 Romans 13:8-14（可跨章節：羅馬書 13:8-14:5）" oninput="onScriptureInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();loadVerses();}">
   </div>
 
   <!-- WORK AREA: contains the Passage block + 5 Steps.
@@ -1753,7 +1777,7 @@
       <a href="#" target="_blank" rel="noopener" class="rcuv-link" id="rcuvLink">前往 RCUV 官網 ↗</a>
     </div>
     <div class="st-passage no-i18n" id="stPassage">
-      <span class="st-empty">在上方欄位輸入經文出處（如「羅馬書 13:8-14」）後，點擊「讀取經文」</span>
+      <span class="st-empty">在上方欄位輸入經文出處（如「羅馬書 13:8-14」或「Romans 13:8-14」），系統將自動載入經文</span>
     </div>
     <textarea class="st-edit no-i18n" id="stEdit" style="display:none" placeholder="貼上或編輯經文… 例如：&#10;8 凡事都不可虧欠人，惟有彼此相愛要常以為虧欠…" oninput="onEditInput()"></textarea>
     <div class="st-hint">提示：在經文中選取關鍵字句，可一鍵加入下方「內容列項」</div>
@@ -2388,6 +2412,78 @@
     '启示录': 66, '启': 66
   };
 
+  // English book names/abbreviations → bookId. Keys are lowercase with all
+  // spaces and periods removed (matched the same way after normalization in
+  // parseRef/lookupBook), so "1 Cor.", "1cor" and "1 Corinthians" all match.
+  const EN_BOOK_MAP = {
+    'genesis':1,'gen':1,'ge':1,'gn':1,
+    'exodus':2,'exod':2,'exo':2,'ex':2,
+    'leviticus':3,'lev':3,'le':3,'lv':3,
+    'numbers':4,'num':4,'nu':4,'nm':4,'nb':4,
+    'deuteronomy':5,'deut':5,'dt':5,'de':5,
+    'joshua':6,'josh':6,'jos':6,
+    'judges':7,'judg':7,'jdg':7,'jg':7,
+    'ruth':8,'ru':8,'rth':8,
+    '1samuel':9,'1sam':9,'1sa':9,'1s':9,
+    '2samuel':10,'2sam':10,'2sa':10,'2s':10,
+    '1kings':11,'1kgs':11,'1ki':11,'1k':11,
+    '2kings':12,'2kgs':12,'2ki':12,'2k':12,
+    '1chronicles':13,'1chr':13,'1ch':13,
+    '2chronicles':14,'2chr':14,'2ch':14,
+    'ezra':15,'ezr':15,'ez':15,
+    'nehemiah':16,'neh':16,'ne':16,
+    'esther':17,'esth':17,'est':17,
+    'job':18,'jb':18,
+    'psalms':19,'psalm':19,'ps':19,'psa':19,'pss':19,
+    'proverbs':20,'prov':20,'pro':20,'prv':20,
+    'ecclesiastes':21,'eccl':21,'eccles':21,'ecc':21,
+    'songofsolomon':22,'songofsongs':22,'song':22,'sos':22,'canticles':22,
+    'isaiah':23,'isa':23,'is':23,
+    'jeremiah':24,'jer':24,'je':24,
+    'lamentations':25,'lam':25,'la':25,
+    'ezekiel':26,'ezek':26,'eze':26,
+    'daniel':27,'dan':27,'da':27,
+    'hosea':28,'hos':28,'ho':28,
+    'joel':29,'jl':29,
+    'amos':30,'am':30,
+    'obadiah':31,'obad':31,'ob':31,
+    'jonah':32,'jon':32,
+    'micah':33,'mic':33,'mc':33,
+    'nahum':34,'nah':34,'na':34,
+    'habakkuk':35,'hab':35,'hb':35,
+    'zephaniah':36,'zeph':36,'zep':36,
+    'haggai':37,'hag':37,'hg':37,
+    'zechariah':38,'zech':38,'zec':38,
+    'malachi':39,'mal':39,'ml':39,
+    'matthew':40,'matt':40,'mt':40,
+    'mark':41,'mk':41,'mrk':41,
+    'luke':42,'lk':42,
+    'john':43,'jn':43,'jhn':43,
+    'acts':44,'ac':44,
+    'romans':45,'rom':45,'ro':45,
+    '1corinthians':46,'1cor':46,'1co':46,
+    '2corinthians':47,'2cor':47,'2co':47,
+    'galatians':48,'gal':48,'ga':48,
+    'ephesians':49,'eph':49,
+    'philippians':50,'phil':50,'php':50,
+    'colossians':51,'col':51,
+    '1thessalonians':52,'1thess':52,'1th':52,
+    '2thessalonians':53,'2thess':53,'2th':53,
+    '1timothy':54,'1tim':54,'1ti':54,
+    '2timothy':55,'2tim':55,'2ti':55,
+    'titus':56,'tit':56,
+    'philemon':57,'philem':57,'phm':57,
+    'hebrews':58,'heb':58,
+    'james':59,'jas':59,'jm':59,
+    '1peter':60,'1pet':60,'1pe':60,'1pt':60,
+    '2peter':61,'2pet':61,'2pe':61,'2pt':61,
+    '1john':62,'1jn':62,'1jo':62,
+    '2john':63,'2jn':63,'2jo':63,
+    '3john':64,'3jn':64,'3jo':64,
+    'jude':65,'jud':65,
+    'revelation':66,'rev':66,'apocalypse':66
+  };
+
   // RCUV book codes for the official site (rcuv.hkbs.org.hk)
   const RCUV_CODES = {
     1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
@@ -2401,14 +2497,16 @@
     64:'3JN',65:'JUD',66:'REV'
   };
 
-  // ===== Weekly schedule =====
+  // ===== Lesson → Scripture reference lookup =====
   // Source: "2026-2027 (羅馬書) 五餅二魚班同工會行事曆" (Anna's uploaded calendar).
-  // Meets Monday nights, U.S. Eastern time. Each entry is one calendar week
-  // (Monday date shown), in order, with no gaps — so week index === array
-  // index once startDate is anchored to the first Monday (Sep 14, 2026).
+  // Selection is by LESSON, not by date/week — different BSF groups start
+  // their lesson numbering on different days, so we let the user pick the
+  // lesson directly from a dropdown ("選擇課程") rather than guessing from
+  // today's date.
   //
   // Each entry: { label: <lesson name in TC>, ref: <TC Scripture reference
-  // for "本週經文", or null>, holiday: true if it's a scheduled off-week }.
+  // to auto-fill, or null if this entry has no assigned passage>,
+  // holiday: true for scheduled off-weeks (excluded from the dropdown). }
   //
   // NOTE: the calendar's "第5課" row lists "Romans 3:31-26", which is not a
   // valid verse range (31 before 26). Given lesson 4 covers 3:1-20 and
@@ -2418,107 +2516,112 @@
     {
       name: 'Romans: From Guilt to Grace',
       nameTC: '羅馬書：從罪到恩',
-      startDate: '2026-09-14', // Mon, Sep 14, 2026 — first class (導言)
       weeks: [
-        { label: '導言',   ref: null },                     // Sep 14, 2026 — Overview
-        { label: '第1課',  ref: '羅馬書 1:1-17' },           // Sep 21, 2026
-        { label: '第2課',  ref: '羅馬書 1:18-32' },          // Sep 28, 2026
-        { label: '第3課',  ref: '羅馬書 2' },                // Oct 5, 2026
-        { label: '第4課',  ref: '羅馬書 3:1-20' },           // Oct 12, 2026
-        { label: '第5課',  ref: '羅馬書 3:21-26' },          // Oct 19, 2026 (corrected, see note above)
-        { label: '第6課',  ref: '羅馬書 3:27-31' },          // Oct 26, 2026
-        { label: '第7課',  ref: '羅馬書 4' },                // Nov 2, 2026
-        { label: '第8課',  ref: '羅馬書 5:1-11' },           // Nov 9, 2026
-        { label: '第9課',  ref: '羅馬書 5:12-21' },          // Nov 16, 2026
-        { label: '第10課', ref: '羅馬書 6:1-11' },           // Nov 23, 2026
-        { label: '第11課', ref: '羅馬書 6:12-23' },          // Nov 30, 2026
-        { label: '第12課', ref: '羅馬書 7' },                // Dec 7, 2026
-        { label: '第13課', ref: '羅馬書 8:1-17' },           // Dec 14, 2026
-        { label: '聖誕假期', ref: null, holiday: true },     // Dec 21, 2026
-        { label: '聖誕假期', ref: null, holiday: true },     // Dec 28, 2026
-        { label: '聖誕假期', ref: null, holiday: true },     // Jan 4, 2027
-        { label: '第14課', ref: '羅馬書 8:18-27' },          // Jan 11, 2027
-        { label: '第15課', ref: '羅馬書 8:28-39' },          // Jan 18, 2027
-        { label: '第16課', ref: '羅馬書 9:1-29' },           // Jan 25, 2027
-        { label: '第17課', ref: '羅馬書 9:30-10:13' },       // Feb 1, 2027
-        { label: '第18課', ref: '羅馬書 10:14-21' },         // Feb 8, 2027
-        { label: '第19課', ref: '羅馬書 11:1-32' },          // Feb 15, 2027
-        { label: '第20課', ref: '羅馬書 11:33-36' },         // Feb 22, 2027
-        { label: '第21課', ref: '羅馬書 12:1-8' },           // Mar 1, 2027
-        { label: '第22課', ref: '羅馬書 12:9-21' },          // Mar 8, 2027
-        { label: '第23課', ref: '羅馬書 13:1-7' },           // Mar 15, 2027
-        { label: '第24課', ref: '羅馬書 13:8-14' },          // Mar 22, 2027
-        { label: '復活節假期', ref: null, holiday: true },   // Mar 29, 2027
-        { label: '第25課', ref: '羅馬書 14' },               // Apr 5, 2027
-        { label: '第26課', ref: '羅馬書 15:1-13' },          // Apr 12, 2027
-        { label: '第27課', ref: '羅馬書 15:14-33' },         // Apr 19, 2027
-        { label: '第28課', ref: '羅馬書 16' },               // Apr 26, 2027
-        { label: '第29課', ref: null },                      // May 3, 2027 — Summary
-        { label: '分享日', ref: null, holiday: true },       // May 10, 2027
+        { label: '導言',   ref: null },                     // Overview
+        { label: '第1課',  ref: '羅馬書 1:1-17' },
+        { label: '第2課',  ref: '羅馬書 1:18-32' },
+        { label: '第3課',  ref: '羅馬書 2' },
+        { label: '第4課',  ref: '羅馬書 3:1-20' },
+        { label: '第5課',  ref: '羅馬書 3:21-26' },          // corrected, see note above
+        { label: '第6課',  ref: '羅馬書 3:27-31' },
+        { label: '第7課',  ref: '羅馬書 4' },
+        { label: '第8課',  ref: '羅馬書 5:1-11' },
+        { label: '第9課',  ref: '羅馬書 5:12-21' },
+        { label: '第10課', ref: '羅馬書 6:1-11' },
+        { label: '第11課', ref: '羅馬書 6:12-23' },
+        { label: '第12課', ref: '羅馬書 7' },
+        { label: '第13課', ref: '羅馬書 8:1-17' },
+        { label: '聖誕假期', ref: null, holiday: true },
+        { label: '聖誕假期', ref: null, holiday: true },
+        { label: '聖誕假期', ref: null, holiday: true },
+        { label: '第14課', ref: '羅馬書 8:18-27' },
+        { label: '第15課', ref: '羅馬書 8:28-39' },
+        { label: '第16課', ref: '羅馬書 9:1-29' },
+        { label: '第17課', ref: '羅馬書 9:30-10:13' },
+        { label: '第18課', ref: '羅馬書 10:14-21' },
+        { label: '第19課', ref: '羅馬書 11:1-32' },
+        { label: '第20課', ref: '羅馬書 11:33-36' },
+        { label: '第21課', ref: '羅馬書 12:1-8' },
+        { label: '第22課', ref: '羅馬書 12:9-21' },
+        { label: '第23課', ref: '羅馬書 13:1-7' },
+        { label: '第24課', ref: '羅馬書 13:8-14' },
+        { label: '復活節假期', ref: null, holiday: true },
+        { label: '第25課', ref: '羅馬書 14' },
+        { label: '第26課', ref: '羅馬書 15:1-13' },
+        { label: '第27課', ref: '羅馬書 15:14-33' },
+        { label: '第28課', ref: '羅馬書 16' },
+        { label: '第29課', ref: null },                      // Summary
+        { label: '分享日', ref: null, holiday: true },
       ]
     }
   ];
 
-  // Look up the homiletics passage scheduled for today (or the most recent
-  // Monday) in the active study year. Returns { entry, study, weekIdx }
-  // where entry = { label, ref, holiday? } — or null if before/after the
-  // whole study's date range.
-  function getBsfPassageForToday() {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    for (const study of STUDY_SCHEDULES) {
-      const start = new Date(study.startDate);
-      start.setHours(0, 0, 0, 0);
-      const dayMs = 24 * 60 * 60 * 1000;
-      const diffDays = Math.floor((today - start) / dayMs);
-      if (diffDays < 0) continue; // study hasn't started yet
-      const weekIdx = Math.floor(diffDays / 7);
-      if (weekIdx >= study.weeks.length) continue; // past end of study
-      return { entry: study.weeks[weekIdx], study: study, weekIdx: weekIdx };
+  // Build the <option> list for #lessonSelect from STUDY_SCHEDULES, skipping
+  // holiday/off-week entries (they're not lessons a user would pick).
+  // Option value = index into weeks[], so onLessonSelect() can look it back up.
+  function populateLessonSelect() {
+    const sel = document.getElementById('lessonSelect');
+    if (!sel) return;
+    const study = STUDY_SCHEDULES[0];
+    if (!study) return;
+    const placeholder = sel.options[0]; // keep "－－ 請選擇課程 －－"
+    sel.innerHTML = '';
+    sel.appendChild(placeholder);
+    study.weeks.forEach((entry, idx) => {
+      if (entry.holiday) return;
+      const opt = document.createElement('option');
+      opt.value = String(idx);
+      opt.textContent = entry.ref ? `${tx(entry.label)} — ${entry.ref}` : tx(entry.label);
+      sel.appendChild(opt);
+    });
+    // Restore previous selection, if any
+    if (state.lessonIndex !== undefined && state.lessonIndex !== null && state.lessonIndex !== '') {
+      sel.value = String(state.lessonIndex);
     }
-    return null;
   }
 
-  // applyScriptureMode() — set the Scripture-input mode (manual vs. auto).
-  // When the user selects "本週經文", we look up today's lesson passage and
-  // load it into the Scripture field. When manual, no automatic action.
+  // Called when the user picks a lesson from the dropdown.
+  function onLessonSelect(value) {
+    state.lessonIndex = value;
+    save();
+    if (value === '' || value === null || value === undefined) return;
+    const study = STUDY_SCHEDULES[0];
+    const entry = study && study.weeks[parseInt(value, 10)];
+    if (!entry) return;
+    if (!entry.ref) return; // no passage assigned to this lesson (e.g. Overview/Summary)
+    let ref = entry.ref;
+    if (state.lang === 'SC') ref = toSC(ref);
+    state.scripture = ref;
+    const inputEl = document.getElementById('scripture');
+    if (inputEl) inputEl.value = ref;
+    state.scripture = ref;
+    save();
+    // Cancel any pending debounced auto-load from onScriptureInput so it
+    // doesn't fire a second (non-silent) load after this one.
+    clearTimeout(scriptureAutoTimer);
+    const btnLoad = document.getElementById('btnLoad');
+    if (btnLoad) btnLoad.classList.remove('pulse');
+    try { loadVerses({ silent: true }); } catch (e) {}
+  }
+
+
+  // applyScriptureMode() — toggles between manual entry and lesson-dropdown
+  // entry. Switching modes never auto-fills by itself; the user must pick a
+  // lesson from the dropdown ("選擇課程") to load its passage.
   function applyScriptureMode(mode, opts) {
     opts = opts || {};
-    state.scriptureMode = (mode === 'bsf') ? 'bsf' : 'manual';
+    state.scriptureMode = (mode === 'lesson') ? 'lesson' : 'manual';
     // Update the radio button visual state
     document.querySelectorAll('#scriptureMode label').forEach(lbl => {
       lbl.classList.toggle('active', lbl.dataset.mode === state.scriptureMode);
       const input = lbl.querySelector('input');
       if (input) input.checked = (lbl.dataset.mode === state.scriptureMode);
     });
-    if (state.scriptureMode === 'bsf' && !opts.silent) {
-      const result = getBsfPassageForToday();
-      const scheduleToastOpts = { burgundy: true, duration: 4500 };
-      if (!result) {
-        toast(tx('目前不在本學年上課期間內（2026-2027 學年從 2026 年 9 月 14 日開始：羅馬書）'), scheduleToastOpts);
-        return;
-      }
-      const entry = result.entry;
-      if (!entry || !entry.ref) {
-        if (entry && entry.holiday) {
-          toast(tx('本週為假期（') + tx(entry.label) + tx('），暫停上課'), scheduleToastOpts);
-        } else if (entry) {
-          toast(tx('本週（') + tx(entry.label) + tx('）沒有指定的分析經文'), scheduleToastOpts);
-        } else {
-          toast(tx('本週為假期，下週恢復'), scheduleToastOpts);
-        }
-        return;
-      }
-      // Load the passage. In SC mode, convert to simplified.
-      let ref = entry.ref;
-      if (state.lang === 'SC') ref = toSC(ref);
-      state.scripture = ref;
-      const inputEl = document.getElementById('scripture');
-      if (inputEl) inputEl.value = ref;
-      onScriptureInput();
-      // Auto-fetch the verses
-      try { loadVerses(); } catch (e) {}
-      toast(tx('已載入本週經文（') + tx(entry.label) + tx('）：') + ref, scheduleToastOpts);
+    // Show the lesson dropdown only in "lesson" mode.
+    const sel = document.getElementById('lessonSelect');
+    if (sel) {
+      sel.style.display = (state.scriptureMode === 'lesson') ? '' : 'none';
+      if (state.scriptureMode === 'lesson') populateLessonSelect();
     }
   }
 
@@ -2562,6 +2665,7 @@
     });
 
     document.getElementById('scripture').value = state.scripture || '';
+    populateLessonSelect();
 
     // Translation selector
     setActiveTranslation(state.translation || 'CUNP');
@@ -2776,6 +2880,10 @@
   }
 
   // ========== SCRIPTURE TEXT (passage fetching & display) ==========
+  // Debounce timer for auto-loading the passage as the user types (see
+  // onScriptureInput below).
+  let scriptureAutoTimer = null;
+
   function onScriptureInput() {
     state.scripture = document.getElementById('scripture').value;
     // Pulse the load button when there's a ref typed but no passage loaded yet
@@ -2788,6 +2896,22 @@
       }
     }
     save();
+
+    // Auto-load once the user pauses typing a moment, as long as what's
+    // currently in the field parses into a recognized reference (Chinese
+    // or English book name). Skip for RCUV, since loading that translation
+    // opens an external site rather than fetching inline — we don't want
+    // to pop open a new tab on every keystroke pause.
+    clearTimeout(scriptureAutoTimer);
+    if (state.translation !== 'RCUV') {
+      const candidate = state.scripture.trim();
+      if (candidate && parseRef(candidate)) {
+        scriptureAutoTimer = setTimeout(() => {
+          const stillCurrent = document.getElementById('scripture').value.trim() === candidate;
+          if (stillCurrent) loadVerses();
+        }, 600);
+      }
+    }
   }
 
   // Translation selector handling
@@ -2903,21 +3027,27 @@
   }
 
   // Reference parser: "羅馬書 13:8-14" → single chapter range
+  //                    "Romans 13:8-14" → same, in English
+  //                    "1 Corinthians 13" → numbered English book
   //                    "羅馬書 13:8-14:5" → cross-chapter range
   //                    "詩篇 23" → whole chapter
   //                    "創世記 1:1" → single verse
   function parseRef(text) {
     if (!text) return null;
-    // Normalize whitespace, full-width punctuation, dashes
+    // Normalize whitespace, periods, full-width punctuation, dashes
     let t = text.trim()
       .replace(/\s+/g, '')
+      .replace(/\./g, '')
       .replace(/[：﹕]/g, ':')
       .replace(/[—–－~～]/g, '-')
       .replace(/[，、]/g, ',')
       .replace(/章/g, ':')
       .replace(/[節节]/g, '');
     // Match: bookname + chapter (+:verseStart) (+ -[chapterEnd:]verseEnd)
-    const m = t.match(/^(\D+?)(\d+)(?::(\d+))?(?:-(?:(\d+):)?(\d+))?$/);
+    // Book name = an optional leading 1-3 (for "1 Corinthians" etc.) followed
+    // by any run of non-digit characters (covers both Chinese book names and
+    // English names/abbreviations, since spaces/periods are already stripped).
+    const m = t.match(/^([1-3]?\D*)(\d+)(?::(\d+))?(?:-(?:(\d+):)?(\d+))?$/);
     if (!m) return null;
     const [_, rawBook, ch, vs, chEnd, ve] = m;
     const bookId = lookupBook(rawBook);
@@ -2941,6 +3071,10 @@
     if (BOOK_MAP[stripped] !== undefined) return BOOK_MAP[stripped];
     // Try with 書 added
     if (BOOK_MAP[name + '書'] !== undefined) return BOOK_MAP[name + '書'];
+    // English name/abbreviation (case-insensitive; already stripped of
+    // spaces and periods by parseRef's normalization step above).
+    const enKey = name.toLowerCase();
+    if (EN_BOOK_MAP[enKey] !== undefined) return EN_BOOK_MAP[enKey];
     return null;
   }
 
@@ -2960,13 +3094,16 @@
       .trim();
   }
 
-  // Main "讀取經文" button handler
-  async function loadVerses() {
+  // Main "讀取經文" button handler. opts.silent suppresses the "已讀取經文"
+  // confirmation toast (used when loading a passage via the lesson dropdown,
+  // where the field is being filled programmatically rather than by hand).
+  async function loadVerses(opts) {
+    opts = opts || {};
     const ref = parseRef(state.scripture);
     const passageEl = document.getElementById('stPassage');
 
     if (!ref) {
-      passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('無法辨識經文出處。請確認格式如「羅馬書 13:8-14」或「羅馬書 13:8-14:5」（跨章節）或「詩篇 23」'))}</span>`;
+      passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('無法辨識經文出處。請確認格式如「羅馬書 13:8-14」、「Romans 13:8-14」、「羅馬書 13:8-14:5」（跨章節）或「詩篇 23」'))}</span>`;
       return;
     }
 
@@ -3046,7 +3183,7 @@
       save();
       const btnLoad = document.getElementById('btnLoad');
       if (btnLoad) btnLoad.classList.remove('pulse');
-      toast(tx('已讀取經文'));
+      if (!opts.silent) toast(tx('已讀取經文'));
     } catch (err) {
       console.error(err);
       passageEl.innerHTML = `<span class="st-error">${escapeHtml(tx('讀取失敗（'))}${escapeHtml(err.message || 'network error')}${escapeHtml(tx('）。請檢查網路連線或改用「編輯」手動貼入經文。'))}</span>`;
@@ -3058,7 +3195,7 @@
     const el = document.getElementById('stPassage');
     const text = state.passageEditable || state.passage || '';
     if (!text) {
-      el.innerHTML = `<span class="st-empty">${escapeHtml(tx('在上方欄位輸入經文出處（如「羅馬書 13:8-14」）後，點擊「讀取經文」'))}</span>`;
+      el.innerHTML = `<span class="st-empty">${escapeHtml(tx('在上方欄位輸入經文出處（如「羅馬書 13:8-14」或「Romans 13:8-14」），系統將自動載入經文'))}</span>`;
       return;
     }
     // Each line is one verse. Leading "N" or "C:V" → verse label; rest is content.
@@ -3539,6 +3676,7 @@
         layout: state.layout,
         translation: state.translation,
         scriptureMode: state.scriptureMode,
+        lessonIndex: state.lessonIndex,
         hintsCollapsed: state.hintsCollapsed
       };
       await storageSet(STORAGE_KEY, JSON.stringify(prefs));
@@ -3561,6 +3699,7 @@
         if (parsed.layout) state.layout = parsed.layout;
         if (parsed.translation) state.translation = parsed.translation;
         if (parsed.scriptureMode) state.scriptureMode = parsed.scriptureMode;
+        if (parsed.lessonIndex !== undefined) state.lessonIndex = parsed.lessonIndex;
         if (Array.isArray(parsed.hintsCollapsed)) state.hintsCollapsed = parsed.hintsCollapsed;
       } catch (e) {}
     }
@@ -3580,9 +3719,10 @@
     applyLang(state.lang);
     applyLayout(state.layout);
     applyHintCollapse();
-    // If the user previously had auto-load enabled, restore that visual
-    // state — but DO NOT auto-fill the Scripture field. They can re-click
-    // "本週經文" if they want today's passage. This keeps the "empty sheet"
+    // If the user previously had "選擇課程" mode on, restore that visual
+    // state (and their last-picked lesson in the dropdown) — but DO NOT
+    // auto-fill the Scripture field. They can re-select from the dropdown
+    // if they want that lesson's passage. This keeps the "empty sheet"
     // starting state honest.
     applyScriptureMode(state.scriptureMode, { silent: true });
   }
