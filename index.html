@@ -2484,7 +2484,7 @@
     'revelation':66,'rev':66,'apocalypse':66
   };
 
-  // RCUV book codes for the official site (rcuv.hkbs.org.hk)
+  // RCUV book codes for building bible.com verse links (used by updateRcuvLink)
   const RCUV_CODES = {
     1:'GEN',2:'EXO',3:'LEV',4:'NUM',5:'DEU',6:'JOS',7:'JDG',8:'RUT',
     9:'1SA',10:'2SA',11:'1KI',12:'2KI',13:'1CH',14:'2CH',15:'EZR',16:'NEH',
@@ -2916,6 +2916,7 @@
 
   // Translation selector handling
   function setActiveTranslation(trans) {
+    const prevTrans = state.translation;
     state.translation = trans;
     document.querySelectorAll('#stTranslation label').forEach(lbl => {
       lbl.classList.toggle('active', lbl.dataset.trans === trans);
@@ -2923,12 +2924,43 @@
       if (r) r.checked = (lbl.dataset.trans === trans);
     });
     document.getElementById('rcuvNotice').style.display = (trans === 'RCUV') ? 'block' : 'none';
-    if (trans === 'RCUV') {
-      // For RCUV, ensure edit textarea is visible by default
-      document.getElementById('stEdit').style.display = 'block';
-    }
+    // The 文字框 (edit textarea) only auto-appears for RCUV, since that
+    // translation requires pasting text in manually. Switching to 新標點和合本
+    // or 和合本 hides it again, so it doesn't linger on screen — the user
+    // can still reopen it any time via the "✎ 編輯" button.
+    const stEdit = document.getElementById('stEdit');
+    if (stEdit) stEdit.style.display = (trans === 'RCUV') ? 'block' : 'none';
     updateRcuvLink();
-    updateAttribution();
+
+    // Re-fetch/re-render the passage for the newly selected translation.
+    // Without this, switching translations only toggled labels/notices —
+    // the passage box kept showing whatever the PREVIOUS translation last
+    // wrote there (e.g. RCUV's "請從官網複製…" message would linger even
+    // after switching to 新標點和合本/和合本).
+    if (trans !== prevTrans) {
+      const hasRef = !!parseRef(state.scripture || '');
+      if (trans === 'RCUV') {
+        // Moving into RCUV: clear whatever CUNP/CUV text was loaded (it's a
+        // different translation's wording) and show the manual-paste prompt.
+        state.passage = '';
+        state.passageEditable = '';
+        if (stEdit) stEdit.value = '';
+        renderPassage();
+        updateAttribution();
+      } else if (hasRef) {
+        // Moving to CUNP/CUV (from RCUV or from each other): fetch this
+        // translation's text for the same reference automatically.
+        try { loadVerses({ silent: true }); } catch (e) {}
+      } else {
+        // No reference typed yet — just clear any leftover message.
+        state.passage = '';
+        state.passageEditable = '';
+        renderPassage();
+        updateAttribution();
+      }
+    } else {
+      updateAttribution();
+    }
   }
 
   document.addEventListener('change', (e) => {
@@ -3003,8 +3035,10 @@
   }
 
   // Update RCUV official site link based on current scripture and language.
-  // TC mode → rcuv.hkbs.org.hk (Hong Kong Bible Society's official site, Traditional Chinese)
-  // SC mode → bible.com/bible/140/<BOOK>.<CHAPTER>.RCUVSS (RCUVSS = the 简体 edition, also published by HKBS)
+  // TC mode → bible.com/bible/139/<BOOK>.<CHAPTER>.RCUV   (Traditional Script)
+  // SC mode → bible.com/bible/140/<BOOK>.<CHAPTER>.RCUVSS (Simplified Script)
+  // Both editions are published by the Hong Kong Bible Society and hosted on
+  // bible.com (YouVersion), so TC and SC now come from the same site.
   function updateRcuvLink() {
     const link = document.getElementById('rcuvLink');
     if (!link) return;
@@ -3019,9 +3053,9 @@
       }
     } else {
       if (code) {
-        link.href = `https://rcuv.hkbs.org.hk/RCUV_2/${code}/${chapter}/`;
+        link.href = `https://www.bible.com/bible/139/${code}.${chapter}.RCUV`;
       } else {
-        link.href = 'https://rcuv.hkbs.org.hk/';
+        link.href = 'https://www.bible.com/versions/139-rcuv';
       }
     }
   }
