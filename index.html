@@ -313,6 +313,73 @@
     border-bottom: 1px solid var(--rule-soft);
   }
 
+  /* Minimize / expand toggle for the Passage card */
+  .st-collapse-btn {
+    font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    padding: 5px 10px;
+    background: var(--bg-2);
+    color: var(--accent-soft);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .st-collapse-btn:hover {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+
+  /* Passage header: title + minimize button on the top row (button pinned to
+     the upper-right corner), translation tabs + load/edit buttons below. */
+  .st-head {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    gap: 14px;
+  }
+  .st-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .st-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  /* Collapsed state: only the title row + toggle remain, so the card stays
+     small (e.g. above steps moved into the left column). */
+  .scripture-text.collapsed {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  .scripture-text.collapsed .st-head {
+    gap: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .scripture-text.collapsed .st-controls,
+  .scripture-text.collapsed .st-translation,
+  .scripture-text.collapsed .st-actions,
+  .scripture-text.collapsed .st-rcuv-notice,
+  .scripture-text.collapsed .st-passage,
+  .scripture-text.collapsed .st-edit,
+  .scripture-text.collapsed .st-hint,
+  .scripture-text.collapsed .st-attribution {
+    display: none !important;
+  }
+
   .st-title-group {
     display: flex;
     align-items: baseline;
@@ -386,58 +453,46 @@
     font-size: 12px;
   }
 
-  /* 讀取經文 — prominent load button */
+  /* 讀取經文 — styled to match the neighbouring ✎ 編輯 button (.btn):
+     same background, border, radius, padding and hover. */
   .btn-load {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
     font-family: 'Noto Serif TC', 'Noto Serif SC', serif;
-    font-size: 13.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    padding: 9px 20px 9px 16px;
-    background: var(--accent);
-    color: var(--paper);
-    border: none;
-    border-radius: 3px;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 8px 14px;
+    background: var(--paper);
+    color: var(--accent);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
     cursor: pointer;
-    box-shadow: 0 2px 0 var(--accent-deep), 0 4px 12px rgba(45,74,62,0.25);
-    transition: all 0.15s ease;
-    position: relative;
-    top: 0;
+    transition: all 0.18s ease;
   }
 
   .btn-load:hover {
-    background: var(--accent-soft);
-    box-shadow: 0 2px 0 var(--accent-deep), 0 6px 16px rgba(45,74,62,0.32);
-    top: -1px;
-  }
-
-  .btn-load:active {
-    top: 1px;
-    box-shadow: 0 1px 0 var(--accent-deep), 0 2px 6px rgba(45,74,62,0.2);
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
   }
 
   .btn-load-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 3px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 1;
     font-family: monospace;
     flex-shrink: 0;
   }
 
-  /* Pulse animation on the load button when scripture field has content
-     but passage hasn't been loaded yet */
+  /* Gentle pulse (accent-colored border glow) when the scripture field has
+     content but the passage hasn't been loaded yet */
   @keyframes btn-pulse {
-    0%, 100% { box-shadow: 0 2px 0 var(--accent-deep), 0 4px 12px rgba(45,74,62,0.25); }
-    50%       { box-shadow: 0 2px 0 var(--accent-deep), 0 4px 20px rgba(45,74,62,0.50), 0 0 0 4px rgba(45,74,62,0.12); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(45,74,62,0); border-color: var(--rule); }
+    50%       { box-shadow: 0 0 0 4px rgba(45,74,62,0.14); border-color: var(--accent); }
   }
 
   .btn-load.pulse {
@@ -1658,6 +1713,9 @@
     .scripture-text { box-shadow: none; border-color: #ccc; page-break-inside: avoid; }
     .scripture-text::before { display: none; }
     .st-translation, .st-actions, .st-rcuv-notice, .st-edit { display: none !important; }
+    .st-collapse-btn { display: none !important; }
+    .scripture-text.collapsed .st-passage, .scripture-text.collapsed .st-attribution { display: block !important; }
+    .scripture-text.collapsed .st-head { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--rule-soft); }
     .st-passage { background: none; }
     input, textarea {
       background: transparent !important;
@@ -1758,17 +1816,20 @@
   <!-- SCRIPTURE TEXT -->
   <div class="scripture-text">
     <div class="st-head">
-      <div class="st-title-group">
+      <div class="st-title-row">
         <h3 class="st-title">經文內文 <span class="st-en">Passage</span></h3>
+        <button class="st-collapse-btn" id="btnCollapsePassage" type="button" onclick="togglePassageCollapse()" aria-expanded="true" title="縮小經文內文">－ 縮小</button>
+      </div>
+      <div class="st-controls">
         <div class="st-translation" id="stTranslation">
           <label data-trans="CUNP" class="active"><input type="radio" name="trans" value="CUNP" checked>新標點和合本</label>
           <label data-trans="CUV"><input type="radio" name="trans" value="CUV">和合本</label>
           <label data-trans="RCUV"><input type="radio" name="trans" value="RCUV">和合本修訂版</label>
         </div>
-      </div>
-      <div class="st-actions">
-        <button class="btn-load" id="btnLoad" onclick="loadVerses()"><span class="btn-load-icon">↵</span>讀取經文</button>
-        <button class="btn" onclick="toggleEdit()" id="btnEdit">✎ 編輯</button>
+        <div class="st-actions">
+          <button class="btn-load" id="btnLoad" onclick="loadVerses()"><span class="btn-load-icon">↵</span>讀取經文</button>
+          <button class="btn" onclick="toggleEdit()" id="btnEdit">✎ 編輯</button>
+        </div>
       </div>
     </div>
     <div class="st-rcuv-notice" id="rcuvNotice" style="display:none">
@@ -2973,6 +3034,7 @@
       applyLang(newLang);
       // Re-render so dynamic strings get translated
       render();
+      applyPassageCollapse();
       save();
     }
     if (e.target.matches('#layoutSwitcher input[type="radio"]')) {
@@ -3000,6 +3062,26 @@
     // Apply step column placements
     applyStepLayout();
     updateMoveButtons();
+  }
+
+  // togglePassageCollapse() — minimize / expand the 經文內文 Passage card so it
+  // stays out of the way when steps are moved into the left column.
+  function togglePassageCollapse() {
+    state.passageCollapsed = !state.passageCollapsed;
+    applyPassageCollapse();
+    save();
+  }
+
+  function applyPassageCollapse() {
+    const card = document.querySelector('.scripture-text');
+    const btn = document.getElementById('btnCollapsePassage');
+    const collapsed = !!state.passageCollapsed;
+    if (card) card.classList.toggle('collapsed', collapsed);
+    if (btn) {
+      btn.textContent = tx(collapsed ? '＋ 展開' : '－ 縮小');
+      btn.title = tx(collapsed ? '展開經文內文' : '縮小經文內文');
+      btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+    }
   }
 
   // toggleHint() — flip the collapsed state of one 方法 hint box.
@@ -3032,6 +3114,7 @@
       const btn = h.querySelector('.hint-toggle');
       if (btn) btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
     });
+    applyPassageCollapse();
   }
 
   // Update RCUV official site link based on current scripture and language.
@@ -3711,7 +3794,8 @@
         translation: state.translation,
         scriptureMode: state.scriptureMode,
         lessonIndex: state.lessonIndex,
-        hintsCollapsed: state.hintsCollapsed
+        hintsCollapsed: state.hintsCollapsed,
+        passageCollapsed: !!state.passageCollapsed
       };
       await storageSet(STORAGE_KEY, JSON.stringify(prefs));
     }, 250);
@@ -3735,6 +3819,7 @@
         if (parsed.scriptureMode) state.scriptureMode = parsed.scriptureMode;
         if (parsed.lessonIndex !== undefined) state.lessonIndex = parsed.lessonIndex;
         if (Array.isArray(parsed.hintsCollapsed)) state.hintsCollapsed = parsed.hintsCollapsed;
+        if (parsed.passageCollapsed !== undefined) state.passageCollapsed = !!parsed.passageCollapsed;
       } catch (e) {}
     }
     // Defaults if any UI prefs aren't yet set
