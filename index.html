@@ -2262,7 +2262,7 @@
   }
 
   // applyLang() — walks the DOM and applies SC conversion to all static UI text.
-  // Skips: input/textarea elements, .no-i18n regions, .st-en/.sr-en/.step-en (English subtitles),
+  // Skips: input/textarea elements, contenteditable content rows (user-typed text with <span class="emph"> splits), .no-i18n regions, .st-en/.sr-en/.step-en (English subtitles),
   //        and language toggle labels themselves.
   const _i18nOriginals = new WeakMap();
   function applyLang(lang) {
@@ -2285,7 +2285,7 @@
           const parent = node.parentElement;
           if (!parent) return NodeFilter.FILTER_REJECT;
           // Skip user-input fields and no-i18n regions
-          if (parent.closest('textarea, input, .no-i18n, .st-en, .sr-en, .step-en, #langSwitcher')) {
+          if (parent.closest('textarea, input, .no-i18n, .content-input, [contenteditable], .st-en, .sr-en, .step-en, #langSwitcher')) {
             return NodeFilter.FILTER_REJECT;
           }
           // Skip empty/whitespace text nodes
